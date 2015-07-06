@@ -14,9 +14,9 @@ If you have trouble, feel free to add an issue to the repo.
 
 The programs to run are in the bin\Debug directory for either the cli or the UI.
 
- The work is all done in the MarketData.GoogleFinance dll with some help from MarketData.ToolBox for zipping, enums and command line arguments.
+The work is all done in the MarketData.GoogleFinance dll with some help from MarketData.ToolBox for zipping, enums and command line arguments.
 
- The UI is documented, albeit a little out of date, in the Documentation folder.  
+The UI is documented, albeit a little out of date, in the Documentation folder.  
 
 If you want End Of Day data, that is the default.  It will download into a sub-folder with the name of the symbol you specify. 
 
@@ -25,9 +25,13 @@ If you want minute data click the Minute Data button.  You will get the last 15 
 Click the download data button and take a look at your data.  If you are happy, click the Save to File button.  
 
 -If you want the raw GoogleFinance data click the check box.  
+
 -If you want Google's funky Unix ticks + offset date translated into a more readable (US format) date time, un-check the Raw Data checkbox
+
 -If you want the file zipped, click the check box.
+
 -If you do minute data and want it split into daily files, click the check box.
+
 -If you want the date translated into milliseconds since midnight, click the Date Time checkbox and it will then say Milliseconds.
 
 Ticker Symbols can be loaded from a csv file.  Only the first two colums matter, the rest can be what every you want.  The first column is the symbol, and the second is the Exchange symbol.  If the second column is blank, the program will fill it in for you by asking GoogleFinance and make a backup copy of your original file.  The program will also sort your csv file into symbol sequence.  The test folder has several examples.
