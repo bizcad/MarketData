@@ -12,9 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
 */
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace MarketData.GoogleFinance
 {
@@ -46,6 +49,30 @@ namespace MarketData.GoogleFinance
             SaveSortedSymbolList(symbolFileInfo);
             return symbolList;
         }
+        public string BuildSymbolsStringFromFile(FileInfo symbolFileInfo)
+        {
+            string s=string.Empty;
+            if (ReadSymbolFileIntoDictionary(symbolFileInfo))
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var item in symbolList.Keys)
+                {
+                    sb.Append(item);
+                    sb.Append(",");
+                }
+                s = sb.ToString();
+                s = s.Remove(s.Length - 1);
+                using (var sr = new StreamWriter(symbolFileInfo.FullName.Replace(".csv", ".txt")))
+                {
+                    
+                    sr.Write(s);
+                    sr.Flush();
+                    
+                }
+            }
+            return s;
+
+        }
         #endregion
         #region private
         /// <summary>
@@ -58,31 +85,47 @@ namespace MarketData.GoogleFinance
             bool foundNoBlankExchangeColumn = true;
             using (StreamReader sr = new StreamReader(symbolFileInfo.FullName))
             {
-                string buffer = sr.ReadLine();
-                if (buffer != null && buffer.Split(',')[0].ToLower().Contains("symbol"))
-                    buffer = sr.ReadLine();
-
-                while (buffer != null)
+                try
                 {
-                    string[] columns = buffer.Split(',');
-                    string symbol = columns[0];
+                    string buffer = sr.ReadLine();
+                    if (buffer != null && buffer.Split(',')[0].ToLower().Contains("symbol"))
+                        buffer = sr.ReadLine();
+                   
+                    while (buffer != null)
                     {
-                        if (columns[1].Length == 0)
+                        if (!buffer.Contains(","))
                         {
-                            foundNoBlankExchangeColumn = false;
-                            ExchangeLookup lookup = new ExchangeLookup(symbol);
-                            columns[1] = lookup.GetExchangeForSymbol(symbol);
+                            buffer += ",";
                         }
-                        symbol = symbol.Replace("\"", "");
 
-                        // Skip duplicate symbols
-                        if (!symbolList.ContainsKey(symbol))
+                        string[] columns = buffer.Split(',');
+                        string symbol = columns[0];
                         {
-                            symbolList.Add(symbol, columns[1]);
-                            linelist.Add(ColumnJoiner.JoinColumns(columns));
+                            if (columns.Length == 1)
+                            {
+                                System.Diagnostics.Debug.WriteLine("here");
+                            }
+                            if (columns[1].Length == 0)
+                            {
+                                foundNoBlankExchangeColumn = false;
+                                ExchangeLookup lookup = new ExchangeLookup(symbol);
+                                columns[1] = lookup.GetExchangeForSymbol(symbol);
+                            }
+                            symbol = symbol.Replace("\"", "");
+
+                            // Skip duplicate symbols
+                            if (!symbolList.ContainsKey(symbol))
+                            {
+                                symbolList.Add(symbol, columns[1]);
+                                linelist.Add(ColumnJoiner.JoinColumns(columns));
+                            }
                         }
+                        buffer = sr.ReadLine();
                     }
-                    buffer = sr.ReadLine();
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
                 }
             }
             return foundNoBlankExchangeColumn;
