@@ -51,24 +51,27 @@ namespace MarketData.GoogleFinance
         }
         public string BuildSymbolsStringFromFile(FileInfo symbolFileInfo)
         {
-            string s=string.Empty;
-            if (ReadSymbolFileIntoDictionary(symbolFileInfo))
+            string s = string.Empty;
+            if (!ReadSymbolFileIntoDictionary(symbolFileInfo))
             {
-                StringBuilder sb = new StringBuilder();
-                foreach (var item in symbolList.Keys)
-                {
-                    sb.Append(item);
-                    sb.Append(",");
-                }
-                s = sb.ToString();
-                s = s.Remove(s.Length - 1);
-                using (var sr = new StreamWriter(symbolFileInfo.FullName.Replace(".csv", ".txt")))
-                {
-                    
-                    sr.Write(s);
-                    sr.Flush();
-                    
-                }
+                // only make a backup of the old csv file if there was a blank exchange column (second column)
+                SaveBackupCopyOfSymbolFile(symbolFileInfo);
+            }
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var item in symbolList.Keys)
+            {
+                sb.Append(item);
+                sb.Append(",");
+            }
+            s = sb.ToString();
+            s = s.Remove(s.Length - 1);
+            using (var sr = new StreamWriter(symbolFileInfo.FullName.Replace(".csv", ".txt")))
+            {
+
+                sr.Write(s);
+                sr.Flush();
+
             }
             return s;
 
@@ -90,7 +93,7 @@ namespace MarketData.GoogleFinance
                     string buffer = sr.ReadLine();
                     if (buffer != null && buffer.Split(',')[0].ToLower().Contains("symbol"))
                         buffer = sr.ReadLine();
-                   
+
                     while (buffer != null)
                     {
                         if (!buffer.Contains(","))
@@ -155,6 +158,6 @@ namespace MarketData.GoogleFinance
             string newfilename = symbolFileInfo.FullName.Replace(".csv", "-old.csv");
             symbolFileInfo.CopyTo(newfilename, true);
         }
-        #endregion 
+        #endregion
     }
 }

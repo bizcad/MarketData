@@ -29,7 +29,7 @@ namespace MarketData.Test
         public void BuildsSymbolsStringFromFile()
         {
             GetDefaults();
-            string filepath = _dir + TestInputfilename;
+            string filepath = _dir + @"SandPRemoved.csv";
             SymbolListBuilder builder = new SymbolListBuilder();
             FileInfo symbolFileInfo = new FileInfo(filepath);
             var result = builder.BuildSymbolsStringFromFile(symbolFileInfo);

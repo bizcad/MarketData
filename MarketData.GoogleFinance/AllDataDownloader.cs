@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -132,6 +133,7 @@ namespace MarketData.GoogleFinance
         /// <returns>Task (void)</returns>
         private async Task LoopSymbolList(Dictionary<string, string> symbolList)
         {
+            List<string> files = new List<string>();
             foreach (string ticker in symbolList.Keys)
             {
                 //DirectoryInfo exchangeDirectoryInfo;
@@ -145,7 +147,25 @@ namespace MarketData.GoogleFinance
                 DirectoryInfo currentDirectoryInfoinfo = new DirectoryInfo(OutputDirectory);
                 DirectoryInfo dailyDirectoryInfo = DailyDirectoryFactory.Create(currentDirectoryInfoinfo);
 
-
+                // Do not write the file if we have already written it today
+                //if (!files.Any())
+                //{
+                //    FileInfo[] filesInfos = dailyDirectoryInfo.GetFiles();
+                //    foreach (var file in filesInfos)
+                //    {
+                //        files.Add(file.FullName);   
+                //    }
+                //}
+                string fn = dailyDirectoryInfo.FullName + ticker + ".zip";
+                if (File.Exists(fn))
+                {
+                    FileInfo f = new FileInfo(fn);
+                    var writetime = f.LastWriteTime;
+                    if (writetime.Month == DateTime.Now.Month && writetime.Day == DateTime.Now.Day)
+                    {
+                        continue;
+                    }
+                }
                 _uriBuilder.SetTickerName(ticker);
                 //_uriBuilder.SetExchangeName(exchangeDirectoryInfo.Name);
 
