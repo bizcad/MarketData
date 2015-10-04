@@ -49,6 +49,7 @@
     <Compile Include="DownloadURIBuilder.cs" />
     <Compile Include="ExchangeDirectoryFactory.cs" />
     <Compile Include="ExchangeLookup.cs" />
+    <Compile Include="FileMover.cs" />
     <Compile Include="FilenameDateFormatter.cs" />
     <Compile Include="MinuteDownloader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

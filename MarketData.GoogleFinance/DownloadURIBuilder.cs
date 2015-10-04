@@ -127,7 +127,7 @@ namespace MarketData.GoogleFinance {
 
             string exchangeString = string.Empty;
             if (!String.IsNullOrEmpty(Exchange)) {
-                exchangeString = "&x=" + Exchange;
+                //exchangeString = "&x=" + Exchange;
             }
 
             return String.Format(formatURI, TickerName, exchangeString, interval, period);

@@ -152,6 +152,15 @@ namespace MarketData.GoogleFinance
                         elements = null;
                         if (processingData)
                         {
+                            if (line.StartsWith(TIME_ZONE_OFFSET_ROW_BEGINNING))
+                            {
+                                if (!int.TryParse(line.Substring(TIME_ZONE_OFFSET_ROW_BEGINNING.Length), out offset))
+                                {
+                                    errorMessage = "Error extracting time zone offset";
+                                    return null;
+                                }
+                                continue;
+                            }
                             if (!GetElements(line, counterOfLines, ref elements, out errorMessage))
                             {
                                 return null;

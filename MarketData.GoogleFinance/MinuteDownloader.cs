@@ -164,21 +164,24 @@ namespace MarketData.GoogleFinance
                 //if (ticker == "ACWV")
                 //    Debug.WriteLine("here");
                 DirectoryInfo _singleLetterDirectoryInfo = SingleLetterDirectoryFactory.Create(exchangeDirectoryInfo, symbol);
-                DirectoryInfo _symbolDirectoryInfo = SymbolDirectoryFactory.Create(_singleLetterDirectoryInfo, symbol);
+
+                DirectoryInfo _qcInfo = new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\");
+                DirectoryInfo _symbolDirectoryInfo = SymbolDirectoryFactory.Create(_qcInfo, symbol);
 
                 // find out if files have been downloaded to this OutputDirectory before.  
                 //  If not get the max available from Google Finance (15 days)
                 //  Otherwise get the files that have not been downloaded.
-                var files = _symbolDirectoryInfo.GetFiles();
+                var files = _symbolDirectoryInfo.GetFiles().OrderBy(f => f.Name);
                 int numberOfDays;
-                if (files.Length == 0)
+                if (!files.Any())
                 {
                     numberOfDays = 15;
                 }
                 else
                 {
-                    var lastfile = files.Last();
+                    var lastfile = files.LastOrDefault();
                     numberOfDays = NumberOfDaysSinceLastDownload(lastfile);
+                    //numberOfDays = 3;
                 }
 
 
@@ -215,6 +218,9 @@ namespace MarketData.GoogleFinance
         {
             WebClient client = (WebClient)sender;
             var ticker = client.QueryString["symbol"];
+            string x;
+            if (ticker.Equals(@"IFT"))
+                x = "";
             DirectoryInfo dir = new DirectoryInfo(client.QueryString["OutputDirectory"]);
 
             using (MemoryStream ms = new MemoryStream(e.Result))

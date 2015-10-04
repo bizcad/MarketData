@@ -76,6 +76,7 @@
     <Compile Include="ConfigTests.cs" />
     <Compile Include="DataLocatorTests.cs" />
     <Compile Include="MinuteDownloaderTests.cs" />
+    <Compile Include="MoveFilesTests.cs" />
     <Compile Include="SymbolDirectoryFactoryTests.cs" />
     <Compile Include="SymbolListBuilderTests.cs" />
     <Compile Include="YahooUriBuilderTests.cs" />
@@ -94,10 +95,6 @@
     <ProjectReference Include="..\MarketData.ToolBox\MarketData.ToolBox.csproj">
       <Project>{e3c5c7f7-7bfe-45e0-b414-f1ea1dfb4c02}</Project>
       <Name>MarketData.ToolBox</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\MarketData.YahooFinance\MarketData.YahooFinance.csproj">
-      <Project>{d59f59cc-3fff-4f2a-a1eb-bc34181fb506}</Project>
-      <Name>MarketData.YahooFinance</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

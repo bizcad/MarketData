@@ -263,9 +263,10 @@ namespace QuantConnect.GoogleFinanceUI
         private string BuildOutputFilename()
         {
             StringBuilder sb = new StringBuilder();
-            if (textBoxExchange.Text.Length > 0)
-                sb.Append(textBoxExchange.Text + "_");
-            sb.Append(textBoxTicker.Text + "_");
+            //if (textBoxExchange.Text.Length > 0)
+            //    sb.Append(textBoxExchange.Text + "_");
+            sb.Append(textBoxTicker.Text);
+            
             if (checkBoxRawData.Checked)
             {
                 sb.Append("RawData");
@@ -283,7 +284,7 @@ namespace QuantConnect.GoogleFinanceUI
             }
             else if (radioButtonAllData.Checked)
             {
-                sb.Append("AllData");
+                //sb.Append("AllData");
             }
             else if (radioButtonSince.Checked)
             {
@@ -400,64 +401,68 @@ namespace QuantConnect.GoogleFinanceUI
         /// <summary>
         /// Moves the symbol folder up one folder to correct a problem with the WriteStream adding an extra symbol subdirectory
         /// </summary>
-        /// <param name="exchangeRoot">string - the starting folder</param>
-        private static void MoveFiles(string exchangeRoot)
+        /// <param name="sourceRoot">string - the starting folder</param>
+        private static void MoveFiles(string sourceRoot)
         {
-
-            DirectoryInfo root = new DirectoryInfo(Config.GetDefaultDownloadDirectory()); 
-            if (exchangeRoot.Length > 0)
-            {
-                root = new DirectoryInfo(exchangeRoot);
-            }
+            DirectoryInfo destRoot = new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute");
+            DirectoryInfo root;
+            if (sourceRoot.Length == 0)
+                throw new Exception("no source");
+            
+                root = new DirectoryInfo(sourceRoot);
+            
             var subdirs1 = root.GetDirectories();
 
             foreach (DirectoryInfo info1 in subdirs1)
             {
-                System.Threading.Thread.Sleep(100);
-                var subdirs2 = info1.GetDirectories();
-                foreach (DirectoryInfo info2 in subdirs2)
-                {
-                    try
-                    {
-                        if (info2.Name.Contains(@"/") || info2.Name.Contains(@"\"))
-                            continue;
-                        var subdirs3 = info2.GetDirectories();
-                        foreach (DirectoryInfo info3 in subdirs3)
-                        {
-                            try
-                            {
-                                if (info3.FullName.ToLower().Contains("ddd"))
-                                    Debug.WriteLine(info3.FullName);
+                if(!Directory.Exists(info1.FullName))
+                    destRoot.CreateSubdirectory(info1.Name);
 
-                                var files = info3.GetFiles();
-                                foreach (var file3 in files)
-                                {
-                                    try
-                                    {
-                                        string oldname = file3.FullName;
-                                        string newname = info2.FullName + @"\" + file3.Name;
-                                        File.Move(oldname, newname);
+                //System.Threading.Thread.Sleep(100);
+                //var subdirs2 = info1.GetDirectories();
+                //foreach (DirectoryInfo info2 in subdirs2)
+                //{
+                //    try
+                //    {
+                //        if (info2.Name.Contains(@"/") || info2.Name.Contains(@"\"))
+                //            continue;
+                //        var subdirs3 = info2.GetDirectories();
+                //        foreach (DirectoryInfo info3 in subdirs3)
+                //        {
+                //            try
+                //            {
+                //                if (info3.FullName.ToLower().Contains("ddd"))
+                //                    Debug.WriteLine(info3.FullName);
 
-                                    }
-                                    catch (Exception ex)
-                                    {
-                                        throw new Exception(ex.Message + file3.FullName);
-                                    }
-                                }
-                                //System.Threading.Thread.Sleep(250);
-                                Directory.Delete(info3.FullName, true);
-                            }
-                            catch (Exception ex)
-                            {
-                                throw new Exception(ex.Message + info3.FullName);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(ex.Message + info2.FullName);
-                    }
-                }
+                //                var files = info3.GetFiles();
+                //                foreach (var file3 in files)
+                //                {
+                //                    try
+                //                    {
+                //                        string oldname = file3.FullName;
+                //                        string newname = info2.FullName + @"\" + file3.Name;
+                //                        File.Move(oldname, newname);
+
+                //                    }
+                //                    catch (Exception ex)
+                //                    {
+                //                        throw new Exception(ex.Message + file3.FullName);
+                //                    }
+                //                }
+                //                //System.Threading.Thread.Sleep(250);
+                //                Directory.Delete(info3.FullName, true);
+                //            }
+                //            catch (Exception ex)
+                //            {
+                //                throw new Exception(ex.Message + info3.FullName);
+                //            }
+                //        }
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        throw new Exception(ex.Message + info2.FullName);
+                //    }
+                //}
             }
         }
         #endregion
@@ -862,7 +867,8 @@ namespace QuantConnect.GoogleFinanceUI
             string directory = GetSaveDirectory();
             if (directory.Length > 0)
             {
-                MoveFiles(directory);
+                DirectoryInfo info = new DirectoryInfo(directory);
+                FileMover.MoveFiles(info);
             }
         }
 
