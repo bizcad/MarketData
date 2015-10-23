@@ -90,12 +90,14 @@ namespace MarketData.GoogleFinance
             {
                 try
                 {
-                    string buffer = sr.ReadLine();
-                    if (buffer != null && buffer.Split(',')[0].ToLower().Contains("symbol"))
-                        buffer = sr.ReadLine();
+                    //string buffer = sr.ReadLine();
+                    //if (buffer != null && buffer.Split(',')[0].ToLower().Contains("symbol"))
+                    //    buffer = sr.ReadLine();
 
-                    while (buffer != null)
+                    while(!sr.EndOfStream)
                     {
+                        string buffer = sr.ReadLine();
+                        
                         if (!buffer.Contains(","))
                         {
                             buffer += ",";
@@ -115,7 +117,11 @@ namespace MarketData.GoogleFinance
                                 columns[1] = lookup.GetExchangeForSymbol(symbol);
                             }
                             symbol = symbol.Replace("\"", "");
-
+                            if (symbol.Contains(@"^"))
+                            {
+                                continue;
+                            }
+                                
                             // Skip duplicate symbols
                             if (!symbolList.ContainsKey(symbol))
                             {
@@ -123,7 +129,7 @@ namespace MarketData.GoogleFinance
                                 linelist.Add(ColumnJoiner.JoinColumns(columns));
                             }
                         }
-                        buffer = sr.ReadLine();
+                        
                     }
                 }
                 catch (Exception e)

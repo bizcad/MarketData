@@ -53,7 +53,7 @@ namespace MarketData.GoogleFinanceDownloader
                 {
                     Console.WriteLine("1. Source file for ticker symbol and exchange list: \n" + defaultInputFile);
                     Console.WriteLine("2. Destination LEAN Data directory: \n" + destinationDirectory);
-                    Console.WriteLine("3. Resolution: " + "minute");
+                    Console.WriteLine("3. Resolution: " + resolution);
                 }
 
                 //Validate the user input:
@@ -223,7 +223,7 @@ namespace MarketData.GoogleFinanceDownloader
                     Console.WriteLine(e.Message + e.StackTrace);
                 }
             }
-            if (args[2].ToLower() == "eod")
+            if (args[2].ToLower() == "eod" || args[2].ToLower() == "daily")
             {
                 try
                 {
