@@ -165,7 +165,8 @@ namespace MarketData.GoogleFinance
                 //    Debug.WriteLine("here");
                 DirectoryInfo _singleLetterDirectoryInfo = SingleLetterDirectoryFactory.Create(exchangeDirectoryInfo, symbol);
 
-                DirectoryInfo _qcInfo = new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\");
+                string equityFolder = Config.GetDefaultDownloadDirectory()+ @"minute\";
+                DirectoryInfo _qcInfo = new DirectoryInfo(equityFolder);
                 DirectoryInfo _symbolDirectoryInfo = SymbolDirectoryFactory.Create(_qcInfo, symbol);
 
                 // find out if files have been downloaded to this OutputDirectory before.  
