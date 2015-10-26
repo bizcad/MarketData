@@ -165,8 +165,20 @@ namespace MarketData.GoogleFinance
                 //    Debug.WriteLine("here");
                 DirectoryInfo _singleLetterDirectoryInfo = SingleLetterDirectoryFactory.Create(exchangeDirectoryInfo, symbol);
 
-                string equityFolder = Config.GetDefaultDownloadDirectory()+ @"minute\";
-                DirectoryInfo _qcInfo = new DirectoryInfo(equityFolder);
+                string outputFolder;
+                if (OutputDirectory != null || OutputDirectory.Length > 0)
+                {
+                    if (!OutputDirectory.EndsWith(@"\"))
+                    {
+                        OutputDirectory += @"\";
+                    }
+                    outputFolder = OutputDirectory;  // the factory adds the "minute";
+                }
+                else
+                {
+                    outputFolder = Config.GetDefaultDownloadDirectory();
+                }
+                DirectoryInfo _qcInfo = new DirectoryInfo(outputFolder);
                 DirectoryInfo _symbolDirectoryInfo = SymbolDirectoryFactory.Create(_qcInfo, symbol);
 
                 // find out if files have been downloaded to this OutputDirectory before.  

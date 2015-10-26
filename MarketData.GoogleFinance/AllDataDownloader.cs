@@ -137,26 +137,27 @@ namespace MarketData.GoogleFinance
             foreach (string ticker in symbolList.Keys)
             {
                 //DirectoryInfo exchangeDirectoryInfo;
-                //string symbol = ticker.Replace("^", "-");
+                string symbol = ticker.Replace("^", "-");
                 if (ticker.Contains(@"\") || ticker.Contains(@"/"))
                     continue;
 
-                if (this.OutputDirectory.Length == 0)
-                    return;
+                string outputFolder;
+                if (OutputDirectory != null || OutputDirectory.Length > 0)
+                {
+                    if (!OutputDirectory.EndsWith(@"\"))
+                    {
+                        OutputDirectory += @"\";
+                    }
+                    outputFolder = OutputDirectory; // The factory addes the daily
+                }
+                else
+                {
+                    outputFolder = Config.GetDefaultDownloadDirectory();
+                }
+                DirectoryInfo _qcInfo = new DirectoryInfo(outputFolder);
+                DirectoryInfo dailyDirectoryInfo = DailyDirectoryFactory.Create(_qcInfo);
 
-                DirectoryInfo currentDirectoryInfoinfo = new DirectoryInfo(OutputDirectory);
-                DirectoryInfo dailyDirectoryInfo = DailyDirectoryFactory.Create(currentDirectoryInfoinfo);
-
-                // Do not write the file if we have already written it today
-                //if (!files.Any())
-                //{
-                //    FileInfo[] filesInfos = dailyDirectoryInfo.GetFiles();
-                //    foreach (var file in filesInfos)
-                //    {
-                //        files.Add(file.FullName);   
-                //    }
-                //}
-                string fn = dailyDirectoryInfo.FullName + ticker + ".zip";
+                string fn = dailyDirectoryInfo.FullName + ticker.ToLower() + ".zip";
                 if (File.Exists(fn))
                 {
                     FileInfo f = new FileInfo(fn);

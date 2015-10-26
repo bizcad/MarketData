@@ -812,7 +812,8 @@ namespace QuantConnect.GoogleFinanceUI
                             {
                                 FormatAsMilliseconds = true,
                                 SplitDays = true,
-                                ZipOutput = true
+                                ZipOutput = true,
+                                OutputDirectory = directory
                             };
                             await minuteDownloader.DownloadDataFromListAsync();
                         }
@@ -820,7 +821,8 @@ namespace QuantConnect.GoogleFinanceUI
                         {
                             AllDataDownloader allDataDownloader = new AllDataDownloader(tickerListInfo, directory)
                             {
-                                ZipOutput = true
+                                ZipOutput = true,
+                                OutputDirectory = directory
                             };
                             await allDataDownloader.DownloadDataFromListAsync();
                         }
