@@ -213,9 +213,9 @@ namespace MarketData.GoogleFinance
                     {"OutputDirectory", _symbolDirectoryInfo.FullName}
                 };
                 _wClient.QueryString = myQueryStringCollection;
-
                 // Get the data async
                 await _wClient.DownloadDataTaskAsync(uri);
+
 
             }
             return;

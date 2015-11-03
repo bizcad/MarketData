@@ -46,6 +46,10 @@ namespace MarketData.GoogleFinance
         /// The path to the csv file for ticker/exchange symbols
         /// </summary>
         public string SymbolList { get; set; }
+        /// <summary>
+        /// The last entry in the csv file.
+        /// </summary>
+        public DateTime lastentry { get; set; }
         private DownloadURIBuilder _uriBuilder;
         /// <summary>
         /// 
@@ -125,6 +129,19 @@ namespace MarketData.GoogleFinance
         #endregion
 
         #region "private methods"
+
+        private DateTime GetLastEntryDate(string filepath, string ticker)
+        {
+            string data = Compression.Unzip(filepath, ticker + ".csv");
+            int index = data.LastIndexOf("2015", System.StringComparison.Ordinal);
+            string lastline = data.Substring(index);
+            int year = System.Convert.ToInt32(lastline.Substring(0, 4));
+            int month = Convert.ToInt32(lastline.Substring(4, 2));
+            int day = Convert.ToInt32(lastline.Substring(6, 2));
+            return new DateTime(year, month, day);
+
+        }
+
         /// <summary>
         /// Loops through a symbol list, looking up the exchange where the security is traded
         ///  and writing the files to an {exchange}\{firstletter}\{symbol} folder
@@ -136,7 +153,7 @@ namespace MarketData.GoogleFinance
             List<string> files = new List<string>();
             foreach (string ticker in symbolList.Keys)
             {
-                //DirectoryInfo exchangeDirectoryInfo;
+
                 string symbol = ticker.Replace("^", "-");
                 if (ticker.Contains(@"\") || ticker.Contains(@"/"))
                     continue;
@@ -157,20 +174,22 @@ namespace MarketData.GoogleFinance
                 DirectoryInfo _qcInfo = new DirectoryInfo(outputFolder);
                 DirectoryInfo dailyDirectoryInfo = DailyDirectoryFactory.Create(_qcInfo);
 
+                var uri = _uriBuilder.GetGetPricesUrlToDownloadAllData(DateTime.Now);
+
                 string fn = dailyDirectoryInfo.FullName + ticker.ToLower() + ".zip";
                 if (File.Exists(fn))
                 {
                     FileInfo f = new FileInfo(fn);
-                    var writetime = f.LastWriteTime;
-                    if (writetime.Month == DateTime.Now.Month && writetime.Day == DateTime.Now.Day)
-                    {
-                        continue;
-                    }
+                    DateTime lastentry = GetLastEntryDate(fn, ticker);
+
+                    DateTime endDateTime =
+                        new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);  // the routine adds a day
+
+                    uri = _uriBuilder.GetGetPricesUrlForRecentData(lastentry.AddDays(1), endDateTime);
                 }
                 _uriBuilder.SetTickerName(ticker);
                 //_uriBuilder.SetExchangeName(exchangeDirectoryInfo.Name);
 
-                var uri = _uriBuilder.GetGetPricesUrlToDownloadAllData(DateTime.Now);
                 // download Data
                 Ticker = ticker;
                 WebClient wClient = new WebClient();
@@ -183,6 +202,8 @@ namespace MarketData.GoogleFinance
             }
             return;
         }
+
+
         /// <summary>
         /// Handler for the Window Client Download Data Complete event.  Saves the historical data to a file
         /// </summary>
@@ -214,7 +235,14 @@ namespace MarketData.GoogleFinance
             DateTime dt = DateTime.Now;
             string[] lines = historicalData.Split('\n');
             StringBuilder sb = new StringBuilder();
-            
+
+            string filepath;
+            var internalFilename = CreateFilename(directory, ticker, out filepath);
+            filepath = filepath.Replace(".csv", ".zip");
+            string data = Compression.Unzip(filepath, internalFilename);
+            sb.AppendLine(data.Trim());
+
+
             foreach (string line in lines)
             {
                 try
@@ -245,7 +273,13 @@ namespace MarketData.GoogleFinance
                         }
                         elements[elements.Length - 1] = elements[elements.Length - 1].Replace("\r", string.Empty);
                         string record = ColumnJoiner.JoinColumns(elements);
-                        sb.AppendLine(record);
+                        //20151030 00:00,
+                        string datestring = line.Substring(0, 15);
+                        if (!data.Contains(datestring))
+                        {
+                            sb.AppendLine(line.Trim());
+                        }
+                        //sb.AppendLine(record);
                     }
                     catch (Exception e)
                     {
@@ -257,7 +291,7 @@ namespace MarketData.GoogleFinance
                     throw new Exception(ex.Message);
                 }
             }
-            await WriteStreamAsync(dt, sb.ToString(), directory, ticker);
+            await WriteStreamAsync(dt, sb.ToString().Trim(), directory, ticker);
             return 1;
         }
         /// <summary>
@@ -270,19 +304,8 @@ namespace MarketData.GoogleFinance
         /// <returns>nothing</returns>
         public async Task<int> WriteStreamAsync(DateTime tradingDate, string buffer, string directory, string ticker)
         {
-            if (directory.Length == 0)
-                directory = Config.GetDefaultDownloadDirectory();
-            if (!directory.EndsWith(@"\"))
-                directory += @"\";
-            if (ticker.Length == 0)
-                throw new NullReferenceException("Ticker symbol is null");
-
-            string folder = directory;
-            string filename = ticker.ToLower() + ".csv";
-
-            string filepath = folder + filename;
-            if (!System.IO.Directory.Exists(folder))
-                System.IO.Directory.CreateDirectory(folder);
+            string filepath;
+            var filename = CreateFilename(directory, ticker, out filepath);
 
             // No point if writing if there is no data in the buffer 
             //  For example, on a bank holiday
@@ -291,8 +314,6 @@ namespace MarketData.GoogleFinance
                 if (ZipOutput)
                 {
                     string zippath = filepath.Replace("csv", "zip");
-                    if (File.Exists(filepath))
-                        File.Delete(filepath);
                     Compression.Zip(zippath, filename, buffer);
                 }
                 else
@@ -306,6 +327,25 @@ namespace MarketData.GoogleFinance
             }
             return buffer.Length;
         }
+
+        private static string CreateFilename(string directory, string ticker, out string filepath)
+        {
+            if (directory.Length == 0)
+                directory = Config.GetDefaultDownloadDirectory();
+            if (!directory.EndsWith(@"\"))
+                directory += @"\";
+            if (ticker.Length == 0)
+                throw new NullReferenceException("Ticker symbol is null");
+
+            string folder = directory;
+            string filename = ticker.ToLower() + ".csv";
+
+            filepath = folder + filename;
+            if (!System.IO.Directory.Exists(folder))
+                System.IO.Directory.CreateDirectory(folder);
+            return filename;
+        }
+
         #endregion
     }
 

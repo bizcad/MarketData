@@ -106,5 +106,42 @@ namespace MarketData.ToolBox
                 }
             }
         }
+
+        public static string Unzip(string zipPath, string internalFilename)
+        {
+            string contents;
+            using (var ms = new MemoryStream())
+            {
+                using (ZipFile zip = ZipFile.Read(zipPath))
+                {
+                    ZipEntry entry = zip[internalFilename];
+                    entry.Extract(ms);  // extract uncompressed content into a memorystream 
+                    byte[] buf = ms.GetBuffer();
+                    contents = Encoding.Default.GetString(buf);
+                    contents = contents.Substring(0, contents.LastIndexOf("\r", System.StringComparison.Ordinal));
+                }
+            }
+            return contents;
+        }
+
+        public static void AddTextToZip(string zipPath, string internalFilename, string data)
+        {
+            string contents;
+            using (var ms = new MemoryStream())
+            {
+                using (ZipFile zip = ZipFile.Read(zipPath))
+                {
+                    ZipEntry entry = zip[internalFilename];
+                    entry.Extract(ms);  // extract uncompressed content into a memorystream 
+                    byte[] buf = ms.GetBuffer();
+                    contents = Encoding.Default.GetString(buf);
+
+
+                    
+                    contents += data;
+                }
+            }
+            Zip(zipPath, internalFilename, contents);
+        }
     }
 }

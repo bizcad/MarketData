@@ -506,10 +506,8 @@ namespace MarketData.GoogleFinance
                 errorMessage = "No data recovered.";
                 return string.Empty;
             }
-            else
-            {
-                return stringResult.ToString();
-            }
+
+            return stringResult.ToString();
         }
         #endregion
 
