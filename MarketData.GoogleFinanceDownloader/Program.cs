@@ -69,6 +69,8 @@ namespace MarketData.GoogleFinanceDownloader
 
                 Console.WriteLine("Processing Files ...");
                 Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
+                validatedArgs[2] = "eod";
+                Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
 
                 // if auto, just run the thing and exit
                 if (runmode == Enums.Runmode.Interactive)
