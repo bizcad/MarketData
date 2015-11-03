@@ -133,8 +133,10 @@ namespace MarketData.GoogleFinance
         private DateTime GetLastEntryDate(string filepath, string ticker)
         {
             string data = Compression.Unzip(filepath, ticker + ".csv");
-            int index = data.LastIndexOf("2015", System.StringComparison.Ordinal);
+            int index = data.LastIndexOf("\n", System.StringComparison.Ordinal) - 100;
             string lastline = data.Substring(index);
+            lastline = lastline.Substring(lastline.LastIndexOf("\n", System.StringComparison.Ordinal) + 1);
+
             int year = System.Convert.ToInt32(lastline.Substring(0, 4));
             int month = Convert.ToInt32(lastline.Substring(4, 2));
             int day = Convert.ToInt32(lastline.Substring(6, 2));
@@ -173,6 +175,10 @@ namespace MarketData.GoogleFinance
                 }
                 DirectoryInfo _qcInfo = new DirectoryInfo(outputFolder);
                 DirectoryInfo dailyDirectoryInfo = DailyDirectoryFactory.Create(_qcInfo);
+
+                string x = "";
+                if (symbol == "ACST")
+                    x = "here";
 
                 var uri = _uriBuilder.GetGetPricesUrlToDownloadAllData(DateTime.Now);
 
@@ -236,12 +242,15 @@ namespace MarketData.GoogleFinance
             DateTime dt = DateTime.Now;
             string[] lines = historicalData.Split('\n');
             StringBuilder sb = new StringBuilder();
-
+            string data = string.Empty;
             string filepath;
             var internalFilename = CreateFilename(directory, ticker, out filepath);
             filepath = filepath.Replace(".csv", ".zip");
-            string data = Compression.Unzip(filepath, internalFilename);
-            sb.AppendLine(data.Trim());
+            if (File.Exists(filepath))
+            {
+                data = Compression.Unzip(filepath, internalFilename);
+                sb.AppendLine(data.Trim());
+            }
 
 
             foreach (string line in lines)
