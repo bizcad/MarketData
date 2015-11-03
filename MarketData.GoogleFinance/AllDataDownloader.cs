@@ -181,9 +181,10 @@ namespace MarketData.GoogleFinance
                 {
                     FileInfo f = new FileInfo(fn);
                     DateTime lastentry = GetLastEntryDate(fn, ticker);
-
                     DateTime endDateTime =
                         new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);  // the routine adds a day
+                    if (lastentry.Equals(endDateTime))
+                        continue;
 
                     uri = _uriBuilder.GetGetPricesUrlForRecentData(lastentry.AddDays(1), endDateTime);
                 }
