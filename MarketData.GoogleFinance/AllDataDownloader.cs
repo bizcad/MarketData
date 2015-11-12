@@ -227,6 +227,7 @@ namespace MarketData.GoogleFinance
             {
                 string historicalData = processor.processStreamMadeOfOneDayLinesToExtractHistoricalData(ms, out errorMessage);
                 System.Diagnostics.Debug.WriteLine(ticker);
+                Console.WriteLine("D " + ticker);
                 await SaveDataAsync(dir.FullName, historicalData, ticker);
             }
         }

@@ -79,6 +79,7 @@
     <Compile Include="MoveFilesTests.cs" />
     <Compile Include="SymbolDirectoryFactoryTests.cs" />
     <Compile Include="SymbolListBuilderTests.cs" />
+    <Compile Include="FileCopierTests.cs" />
     <Compile Include="YahooUriBuilderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTest2.cs" />
@@ -88,6 +89,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MarketData.GoogleFinanceDownloader\MarketData.GoogleFinanceDownloader.csproj">
+      <Project>{799705e7-b166-4e0d-aaea-bd274616c8c2}</Project>
+      <Name>MarketData.GoogleFinanceDownloader</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MarketData.GoogleFinance\MarketData.GoogleFinance.csproj">
       <Project>{ccd6e605-2aed-4aa5-822e-7ee04398ce8a}</Project>
       <Name>MarketData.GoogleFinance</Name>

@@ -142,6 +142,8 @@ namespace MarketData.GoogleFinance
         {
             foreach (string ticker in symbolList.Keys)
             {
+                //if (System.String.Compare(ticker, "QCOM", System.StringComparison.Ordinal) <= 0)
+                //    continue;
                 DirectoryInfo exchangeDirectoryInfo;
                 string symbol = ticker.Replace("^", "-");
                 if (symbol.Contains(@"\") || symbol.Contains(@"/"))
@@ -256,6 +258,8 @@ namespace MarketData.GoogleFinance
             {
                 Debug.WriteLine(errorMessage);
             }
+            
+            Console.WriteLine("M " + symbol);
             Debug.WriteLine(symbol);    // So we can see progress in Visual Studio
             await SaveDataAsync(singleLetterDirectoryInfo.FullName, resultValue, symbol);
 

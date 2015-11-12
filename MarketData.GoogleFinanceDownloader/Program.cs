@@ -14,6 +14,7 @@
 */
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -72,6 +73,10 @@ namespace MarketData.GoogleFinanceDownloader
                 validatedArgs[2] = "eod";
                 Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
 
+                FileCopier fc = new FileCopier();
+                fc.CopyFiles();
+
+
                 // if auto, just run the thing and exit
                 if (runmode == Enums.Runmode.Interactive)
                 {
@@ -84,6 +89,27 @@ namespace MarketData.GoogleFinanceDownloader
                 Console.WriteLine(ex.Message + ex.StackTrace);
             }
         }
+
+        //public static void CopyFiles(List<string> symbolsFromFile)
+        //{
+
+        //    foreach (string symbol in symbolsFromFile)
+        //    {
+        //        string sourcefolder = @"H:\GoogleFinanceData\equity\usa\minute\" + symbol;
+        //        string destfolder = @"I:\Dropbox\JJ\data\equity\usa\minute" + symbol;
+        //        FileInfo[] sourceFileInfos = new DirectoryInfo(sourcefolder).GetFiles();
+        //        FileInfo[] destFileInfos = new DirectoryInfo(destfolder).GetFiles();
+        //        foreach (var f in sourceFileInfos)
+        //        {
+        //            if (!destFileInfos.Contains(f))
+        //            {
+        //                File.Copy(f.FullName, destfolder);
+        //            }
+        //        }
+
+        //    }
+        //}
+
 
         private static void GetOptionsInteractive(Enums.Runmode runmode, ref string defaultInputFile, ref string destinationDirectory,
             ref Enum resolution)
