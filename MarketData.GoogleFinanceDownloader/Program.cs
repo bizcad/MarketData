@@ -74,15 +74,16 @@ namespace MarketData.GoogleFinanceDownloader
                 Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
 
                 FileCopier fc = new FileCopier();
-                fc.CopyFiles();
+                int filescopied = fc.CopyFiles();
+                
 
 
                 // if auto, just run the thing and exit
-                if (runmode == Enums.Runmode.Interactive)
-                {
+                //if (runmode == Enums.Runmode.Interactive)
+                //{
                     Console.WriteLine("Done. Press any key to exit.");
                     Console.ReadKey();
-                }
+                //}
             }
             catch (Exception ex)
             {
