@@ -65,7 +65,7 @@ namespace MarketData.GoogleFinance
         /// If true, the outputfile will be zipped.  If false, outputfile will be csv
         /// </summary>
         public Boolean ZipOutput { get; set; }
-
+        public Logger logger { get; set; }
         /// <summary>
         /// Empty constructor
         /// </summary>
@@ -145,48 +145,46 @@ namespace MarketData.GoogleFinance
                 //if (System.String.Compare(ticker, "QCOM", System.StringComparison.Ordinal) <= 0)
                 //    continue;
                 DirectoryInfo exchangeDirectoryInfo;
-                string symbol = ticker.Replace("^", "-");
+                string symbol = ticker.Replace("^", "-").Trim();
                 if (symbol.Contains(@"\") || symbol.Contains(@"/"))
                     continue;
 
                 // Look up the exchange on GoogleFinance if it is not in the symbolList item
+                string exchange;
                 var kvpair = symbolList.FirstOrDefault(s => s.Key == ticker);
                 if (kvpair.Value == null)
                 {
                     // Look up the exchange from GoogleFinance
                     ExchangeLookup exchangeLookup = new ExchangeLookup();
-                    string exchange = exchangeLookup.GetExchangeForSymbol(ticker);
-                    exchangeDirectoryInfo = ExchangeDirectoryFactory.Create(exchange, OutputDirectory);
+                    exchange = exchangeLookup.GetExchangeForSymbol(ticker);
                 }
                 else
                 {
-                    exchangeDirectoryInfo = ExchangeDirectoryFactory.Create(kvpair.Value.Replace("\"", string.Empty).Trim(), OutputDirectory);
+                    exchange = kvpair.Value;
                 }
                 // used in debugging
                 //if (ticker == "ACWV")
                 //    Debug.WriteLine("here");
-                DirectoryInfo _singleLetterDirectoryInfo = SingleLetterDirectoryFactory.Create(exchangeDirectoryInfo, symbol);
 
-                string outputFolder;
+                DirectoryInfo outputFolder;
                 if (OutputDirectory != null || OutputDirectory.Length > 0)
                 {
                     if (!OutputDirectory.EndsWith(@"\"))
                     {
                         OutputDirectory += @"\";
                     }
-                    outputFolder = OutputDirectory;  // the factory adds the "minute";
+                    outputFolder = new DirectoryInfo(OutputDirectory);  // the factory adds the "minute";
                 }
                 else
                 {
-                    outputFolder = Config.GetDefaultDownloadDirectory();
+                    outputFolder = new DirectoryInfo(Config.GetDefaultDownloadDirectory());
                 }
-                DirectoryInfo _qcInfo = new DirectoryInfo(outputFolder);
-                DirectoryInfo _symbolDirectoryInfo = SymbolDirectoryFactory.Create(_qcInfo, symbol);
-
+                
+                DirectoryInfo symbolDirectoryInfo = SymbolDirectoryFactory.Create(MinuteDirectoryFactory.Create(outputFolder), symbol);
                 // find out if files have been downloaded to this OutputDirectory before.  
                 //  If not get the max available from Google Finance (15 days)
                 //  Otherwise get the files that have not been downloaded.
-                var files = _symbolDirectoryInfo.GetFiles().OrderBy(f => f.Name);
+                var files = symbolDirectoryInfo.GetFiles().OrderBy(f => f.Name);
                 int numberOfDays;
                 if (!files.Any())
                 {
@@ -201,7 +199,7 @@ namespace MarketData.GoogleFinance
 
 
                 _uriBuilder.SetTickerName(symbol);
-                _uriBuilder.SetExchangeName(exchangeDirectoryInfo.Name);
+                _uriBuilder.SetExchangeName(exchange);
 
                 var uri = _uriBuilder.GetGetPricesUrlForLastNumberOfDays(numberOfDays);
                 // download Data
@@ -212,15 +210,13 @@ namespace MarketData.GoogleFinance
                 NameValueCollection myQueryStringCollection = new NameValueCollection
                 {
                     {"symbol", ticker},
-                    {"OutputDirectory", _symbolDirectoryInfo.FullName}
+                    {"OutputDirectory", symbolDirectoryInfo.FullName}
                 };
                 _wClient.QueryString = myQueryStringCollection;
                 // Get the data async
                 await _wClient.DownloadDataTaskAsync(uri);
 
-
             }
-            return;
         }
 
         /// <summary>
@@ -256,11 +252,11 @@ namespace MarketData.GoogleFinance
             string resultValue = dp.ProcessStreamOfOneMinuteBarsToReplaceGoogleDateWithFormatted(ms, "Millisecond", out errorMessage);
             if (!String.IsNullOrEmpty(errorMessage))
             {
-                Debug.WriteLine(errorMessage);
+                string message = string.Format("{0} Minute Symbol had an error. {1}", symbol, errorMessage);
+                logger.Log(message);
+
             }
-            
             Console.WriteLine("M " + symbol);
-            Debug.WriteLine(symbol);    // So we can see progress in Visual Studio
             await SaveDataAsync(singleLetterDirectoryInfo.FullName, resultValue, symbol);
 
         }

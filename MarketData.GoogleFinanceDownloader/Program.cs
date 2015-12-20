@@ -54,7 +54,7 @@ namespace MarketData.GoogleFinanceDownloader
                 {
                     Console.WriteLine("1. Source file for ticker symbol and exchange list: \n" + defaultInputFile);
                     Console.WriteLine("2. Destination LEAN Data directory: \n" + destinationDirectory);
-                    Console.WriteLine("3. Resolution: " + resolution);
+                    Console.WriteLine("3. Both minute and eod will run. ");
                 }
 
                 //Validate the user input:
@@ -69,17 +69,28 @@ namespace MarketData.GoogleFinanceDownloader
                 validatedArgs[2] = resolution.ToString();
 
                 Console.WriteLine("Processing Files ...");
-                Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
-                validatedArgs[2] = "eod";
-                Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
+                if (runmode == Enums.Runmode.Automatic)
+                {
 
-                FileCopier fc = new FileCopier();
-                int filescopied = fc.CopyFiles();
+                    validatedArgs[2] = "minute";
+                    Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
+
+                    validatedArgs[2] = "eod";
+                    Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
+
+                    FileCopier fc = new FileCopier();
+                    int filescopied = fc.CopyFiles();
+
+                }
+                else
+                {
+                    Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
+                }
                 
 
 
                 // if auto, just run the thing and exit
-                //if (runmode == Enums.Runmode.Interactive)
+                //if (runmode == Enums.Runmode.Automatic)
                 //{
                     Console.WriteLine("Done. Press any key to exit.");
                     Console.ReadKey();
@@ -232,6 +243,7 @@ namespace MarketData.GoogleFinanceDownloader
         /// <returns>nothing</returns>
         private async static Task MainAsync(string[] args)
         {
+            Logger logger = new Logger("errors.txt");
             if (args[2] == "minute")
             {
                 try
@@ -245,26 +257,29 @@ namespace MarketData.GoogleFinanceDownloader
                         SplitDays = true,
                         ZipOutput = true
                     };
+                    minuteDownloader.logger = new Logger("MinuteLog.txt");
                     await minuteDownloader.DownloadDataFromListAsync();
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message + e.StackTrace);
+                    logger.Log(e.Message + e.StackTrace);
                 }
             }
             if (args[2].ToLower() == "eod" || args[2].ToLower() == "daily")
             {
+
                 try
                 {
                     FileInfo tickerListInfo = new FileInfo(args[0]);
                     string directory = args[1];
 
                     AllDataDownloader downloader = new AllDataDownloader(tickerListInfo, directory) { ZipOutput = true };
+                    downloader.logger = new Logger("DailyLogger.txt");
                     await downloader.DownloadDataFromListAsync();
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e.Message + e.StackTrace);
+                    logger.Log(e.Message + e.StackTrace);
                 }
             }
 

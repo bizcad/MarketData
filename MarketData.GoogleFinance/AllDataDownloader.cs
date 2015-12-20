@@ -15,6 +15,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -60,10 +61,14 @@ namespace MarketData.GoogleFinance
         /// If true, the output will be zipped.  If false, csv
         /// </summary>
         public Boolean ZipOutput { get; set; }
+        public Logger logger;
+
         /// <summary>
         /// Empty constructor
         /// </summary>
-        public AllDataDownloader() { }
+        public AllDataDownloader()
+        {
+        }
         /// <summary>
         /// Parameter constructor for use with a single symbol and the default output OutputDirectory
         /// </summary>
@@ -132,15 +137,27 @@ namespace MarketData.GoogleFinance
 
         private DateTime GetLastEntryDate(string filepath, string ticker)
         {
-            string data = Compression.Unzip(filepath, ticker + ".csv");
-            int index = data.LastIndexOf("\n", System.StringComparison.Ordinal) - 100;
-            string lastline = data.Substring(index);
-            lastline = lastline.Substring(lastline.LastIndexOf("\n", System.StringComparison.Ordinal) + 1);
+            try
+            {
+                string data = Compression.Unzip(filepath, ticker + ".csv");
+                int index = data.LastIndexOf("\n", System.StringComparison.Ordinal) - 100;
+                if (index < 0)
+                {
+                    index = 1;
+                }
+                string lastline = data.Substring(index);
+                lastline = lastline.Substring(lastline.LastIndexOf("\n", System.StringComparison.Ordinal) + 1);
 
-            int year = System.Convert.ToInt32(lastline.Substring(0, 4));
-            int month = Convert.ToInt32(lastline.Substring(4, 2));
-            int day = Convert.ToInt32(lastline.Substring(6, 2));
-            return new DateTime(year, month, day);
+                int year = System.Convert.ToInt32(lastline.Substring(0, 4));
+                int month = Convert.ToInt32(lastline.Substring(4, 2));
+                int day = Convert.ToInt32(lastline.Substring(6, 2));
+                return new DateTime(year, month, day);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("GetLastEntryDate: filepath {0} ticker {1}", filepath, ticker) +
+                                    ex.Message + ex.StackTrace);
+            }
 
         }
 
@@ -152,11 +169,12 @@ namespace MarketData.GoogleFinance
         /// <returns>Task (void)</returns>
         private async Task LoopSymbolList(Dictionary<string, string> symbolList)
         {
+            
             List<string> files = new List<string>();
             foreach (string ticker in symbolList.Keys)
             {
 
-                string symbol = ticker.Replace("^", "-");
+                string symbol = ticker.Replace("^", "-").Trim();
                 if (ticker.Contains(@"\") || ticker.Contains(@"/"))
                     continue;
 
@@ -176,15 +194,16 @@ namespace MarketData.GoogleFinance
                 DirectoryInfo _qcInfo = new DirectoryInfo(outputFolder);
                 DirectoryInfo dailyDirectoryInfo = DailyDirectoryFactory.Create(_qcInfo);
 
-                string x = "";
-                if (symbol == "ACST")
-                    x = "here";
-
+                _uriBuilder.SetTickerName(ticker);
                 var uri = _uriBuilder.GetGetPricesUrlToDownloadAllData(DateTime.Now);
 
                 string fn = dailyDirectoryInfo.FullName + ticker.ToLower() + ".zip";
                 if (File.Exists(fn))
                 {
+                    /* to rebuild the entire list */
+                    //File.Delete(fn);
+
+                    /* to add the latest files */
                     FileInfo f = new FileInfo(fn);
                     DateTime lastentry = GetLastEntryDate(fn, ticker);
                     DateTime endDateTime =
@@ -194,8 +213,6 @@ namespace MarketData.GoogleFinance
 
                     uri = _uriBuilder.GetGetPricesUrlForRecentData(lastentry.AddDays(1), endDateTime);
                 }
-                _uriBuilder.SetTickerName(ticker);
-                //_uriBuilder.SetExchangeName(exchangeDirectoryInfo.Name);
 
                 // download Data
                 Ticker = ticker;
@@ -220,15 +237,23 @@ namespace MarketData.GoogleFinance
         {
             WebClient client = (WebClient)sender;
             var ticker = client.QueryString["symbol"];
+
             DirectoryInfo dir = new DirectoryInfo(client.QueryString["OutputDirectory"]);
-            string errorMessage;
+            string errorMessage = string.Empty;
             DataProcessor processor = new DataProcessor();
             using (MemoryStream ms = new MemoryStream(e.Result))
             {
                 string historicalData = processor.processStreamMadeOfOneDayLinesToExtractHistoricalData(ms, out errorMessage);
-                System.Diagnostics.Debug.WriteLine(ticker);
-                Console.WriteLine("D " + ticker);
-                await SaveDataAsync(dir.FullName, historicalData, ticker);
+                if (!String.IsNullOrEmpty(errorMessage))
+                {
+                    string message = string.Format("{0} Daily Ticker had an error. {1}", ticker, errorMessage);
+                    logger.Log(message);
+                }
+                else
+                {
+                    Console.WriteLine("D " + ticker);
+                    await SaveDataAsync(dir.FullName, historicalData, ticker);
+                }
             }
         }
         /// <summary>
@@ -280,7 +305,7 @@ namespace MarketData.GoogleFinance
                         }
                         catch (Exception e)
                         {
-                            Console.WriteLine(e);
+                            throw new Exception(e.Message);
                         }
                         elements[elements.Length - 1] = elements[elements.Length - 1].Replace("\r", string.Empty);
                         string record = ColumnJoiner.JoinColumns(elements);
@@ -290,11 +315,10 @@ namespace MarketData.GoogleFinance
                         {
                             sb.AppendLine(line.Trim());
                         }
-                        //sb.AppendLine(record);
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e);
+                        throw new Exception(e.Message);
                     }
                 }
                 catch (Exception ex)

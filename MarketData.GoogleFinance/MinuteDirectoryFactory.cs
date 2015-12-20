@@ -20,32 +20,27 @@ namespace MarketData.GoogleFinance
     /// <summary>
     /// Creates a FileInfo for a single letter folder based upon the first letter of the symbol
     /// </summary>
-    public static class SingleLetterDirectoryFactory
+    public static class MinuteDirectoryFactory
     {
         /// <summary>
         /// Checks to see if a folder with the first letter of the symbol name exists
         /// If not it creates it.  The downloadede data will be saved to the symbol folder under 
         /// the first letter folder
         /// </summary>
-        /// <param name="exchangeDirectoryInfo">DirectoryInfo - the info for a created directory for the exchange</param>
+        /// <param name="defaultOutputDirectoryPath">DirectoryInfo - the info for a created directory for the exchange</param>
         /// <param name="symbol">string - the ticker symbol</param>
         /// <returns></returns>
-        public static DirectoryInfo Create(DirectoryInfo exchangeDirectoryInfo, string symbol)
+        public static DirectoryInfo Create(DirectoryInfo defaultOutputDirectoryPath)
         {
-            if (symbol.Length == 0)
-                throw new Exception("SingleLetterDirectoryFactory: You must supply a symbol");
+            string directory = defaultOutputDirectoryPath.FullName;
+            if (!directory.EndsWith(@"\"))
+                directory += @"\";
+            directory += @"equity\usa\minute\";
 
-            string firstLetter = symbol.Substring(0, 1);
+            if (!Directory.Exists(directory))
+                Directory.CreateDirectory(directory);
 
-            string firstLetterDirectory = exchangeDirectoryInfo.FullName;
-            if (!firstLetterDirectory.EndsWith(@"\"))
-                firstLetterDirectory += @"\";
-            firstLetterDirectory += firstLetter;
-
-            if (!Directory.Exists(firstLetterDirectory))
-                Directory.CreateDirectory(firstLetterDirectory);
-
-            return new DirectoryInfo(firstLetterDirectory);
+            return new DirectoryInfo(directory);
         }
     }
 }

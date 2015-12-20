@@ -51,9 +51,10 @@
     <Compile Include="ExchangeLookup.cs" />
     <Compile Include="FileMover.cs" />
     <Compile Include="FilenameDateFormatter.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="MinuteDownloader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SingleLetterDirectoryFactory.cs" />
+    <Compile Include="MinuteDirectoryFactory.cs" />
     <Compile Include="SymbolDirectoryFactory.cs" />
     <Compile Include="SymbolListBuilder.cs" />
   </ItemGroup>

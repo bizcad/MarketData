@@ -32,7 +32,7 @@ namespace MarketData.GoogleFinance
             string dailyDirectory = outputDirectoryInfo.FullName;
             if (!dailyDirectory.EndsWith(@"\"))
                 dailyDirectory += @"\";
-            dailyDirectory += @"daily\";
+            dailyDirectory += @"equity\usa\daily\";
             if (!Directory.Exists(dailyDirectory))
                 Directory.CreateDirectory(dailyDirectory);
 

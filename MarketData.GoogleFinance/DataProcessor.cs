@@ -120,7 +120,7 @@ namespace MarketData.GoogleFinance
 
                         if (String.IsNullOrEmpty(line))
                         {
-                            Debug.Fail("Empty line!");
+                            errorMessage = "Empty line!";
                             continue;
                         }
                         //Extract information from the file headers.
@@ -172,7 +172,7 @@ namespace MarketData.GoogleFinance
 
                                 if (offset == int.MinValue)
                                 {
-                                    Debug.Fail("Timezone offset unitialized.");
+                                    errorMessage = "Timezone offset unitialized.";
                                     offset = 0;
                                 }
                             }
@@ -214,7 +214,7 @@ namespace MarketData.GoogleFinance
             }
             catch (Exception e)
             {
-                throw new Exception(e.Message + e.StackTrace);
+                errorMessage = e.Message + e.StackTrace;
             }
             return sb.ToString();
         }
@@ -433,7 +433,6 @@ namespace MarketData.GoogleFinance
 
             StreamReader sr = new StreamReader(str);
 
-            string line;
             DateTime lastInterpretedDate = DateTime.MaxValue;
             DateTime previousDate = DateTime.MaxValue;
             bool processingData = false;
@@ -441,8 +440,9 @@ namespace MarketData.GoogleFinance
             //Process the retrieved file.
             int numberOfLines = 0;
             bool atLeastOneLineProcessed = false;
-            while ((line = sr.ReadLine()) != null)
+            while (!sr.EndOfStream)
             {
+                string line = sr.ReadLine();
                 numberOfLines++;
 
                 if (!processingData)
@@ -465,7 +465,7 @@ namespace MarketData.GoogleFinance
                 string[] elements = null;
                 if (!GetElements(line, numberOfLines, ref elements, out errorMessage))
                 {
-                    return null;
+                    errorMessage = string.Format("GetElements failed on line {0} ", line);
                 }
 
                 DateTime dt;
@@ -492,7 +492,8 @@ namespace MarketData.GoogleFinance
                 string convertedLine = formatData("Day", dt, elements[(int)Columns.open], elements[(int)Columns.high], elements[(int)Columns.low],
                     elements[(int)Columns.close], elements[(int)Columns.volume]);
 
-
+                if (convertedLine.StartsWith("20151216"))
+                    Debug.WriteLine("here");
                 stringResult.AppendLine(convertedLine);
                 previousDate = dt.Date;
 

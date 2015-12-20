@@ -26,6 +26,7 @@
         private void InitializeComponent() {
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.groupBoxData = new System.Windows.Forms.GroupBox();
+            this.checkBoxZipOutput = new System.Windows.Forms.CheckBox();
             this.buttonMoveData = new System.Windows.Forms.Button();
             this.buttonCheckDataFormat = new System.Windows.Forms.Button();
             this.checkBoxSplitDays = new System.Windows.Forms.CheckBox();
@@ -52,13 +53,18 @@
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.checkBoxZipOutput = new System.Windows.Forms.CheckBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.symbolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteMissedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cleanOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel.SuspendLayout();
             this.groupBoxData.SuspendLayout();
             this.groupBoxURL.SuspendLayout();
             this.panelURLData.SuspendLayout();
             this.groupBoxDatesRange.SuspendLayout();
             this.groupBoxTicker.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // tableLayoutPanel
@@ -72,11 +78,11 @@
             this.tableLayoutPanel.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel.Name = "tableLayoutPanel";
             this.tableLayoutPanel.RowCount = 3;
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 119F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 78F));
-            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 17F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 163F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 71F));
+            this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 8F));
             this.tableLayoutPanel.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel.Size = new System.Drawing.Size(519, 599);
+            this.tableLayoutPanel.Size = new System.Drawing.Size(519, 641);
             this.tableLayoutPanel.TabIndex = 0;
             // 
             // groupBoxData
@@ -90,12 +96,22 @@
             this.groupBoxData.Controls.Add(this.checkBoxRawData);
             this.groupBoxData.Controls.Add(this.richTextBoxData);
             this.groupBoxData.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxData.Location = new System.Drawing.Point(3, 200);
+            this.groupBoxData.Location = new System.Drawing.Point(3, 237);
             this.groupBoxData.Name = "groupBoxData";
-            this.groupBoxData.Size = new System.Drawing.Size(513, 396);
+            this.groupBoxData.Size = new System.Drawing.Size(513, 401);
             this.groupBoxData.TabIndex = 2;
             this.groupBoxData.TabStop = false;
             this.groupBoxData.Text = "Data";
+            // 
+            // checkBoxZipOutput
+            // 
+            this.checkBoxZipOutput.AutoSize = true;
+            this.checkBoxZipOutput.Location = new System.Drawing.Point(268, 23);
+            this.checkBoxZipOutput.Name = "checkBoxZipOutput";
+            this.checkBoxZipOutput.Size = new System.Drawing.Size(76, 17);
+            this.checkBoxZipOutput.TabIndex = 7;
+            this.checkBoxZipOutput.Text = "Zip Output";
+            this.checkBoxZipOutput.UseVisualStyleBackColor = true;
             // 
             // buttonMoveData
             // 
@@ -173,7 +189,7 @@
             this.richTextBoxData.Name = "richTextBoxData";
             this.richTextBoxData.ReadOnly = true;
             this.richTextBoxData.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.richTextBoxData.Size = new System.Drawing.Size(503, 297);
+            this.richTextBoxData.Size = new System.Drawing.Size(503, 302);
             this.richTextBoxData.TabIndex = 2;
             this.richTextBoxData.Text = "";
             this.richTextBoxData.TextChanged += new System.EventHandler(this.textBoxData_TextChanged);
@@ -183,9 +199,9 @@
             this.groupBoxURL.Controls.Add(this.textBoxURL);
             this.groupBoxURL.Controls.Add(this.buttonDownload);
             this.groupBoxURL.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBoxURL.Location = new System.Drawing.Point(3, 122);
+            this.groupBoxURL.Location = new System.Drawing.Point(3, 166);
             this.groupBoxURL.Name = "groupBoxURL";
-            this.groupBoxURL.Size = new System.Drawing.Size(513, 72);
+            this.groupBoxURL.Size = new System.Drawing.Size(513, 65);
             this.groupBoxURL.TabIndex = 1;
             this.groupBoxURL.TabStop = false;
             this.groupBoxURL.Text = "URL";
@@ -215,10 +231,11 @@
             // 
             this.panelURLData.Controls.Add(this.groupBoxDatesRange);
             this.panelURLData.Controls.Add(this.groupBoxTicker);
+            this.panelURLData.Controls.Add(this.menuStrip1);
             this.panelURLData.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelURLData.Location = new System.Drawing.Point(3, 3);
             this.panelURLData.Name = "panelURLData";
-            this.panelURLData.Size = new System.Drawing.Size(513, 113);
+            this.panelURLData.Size = new System.Drawing.Size(513, 157);
             this.panelURLData.TabIndex = 0;
             // 
             // groupBoxDatesRange
@@ -231,9 +248,9 @@
             this.groupBoxDatesRange.Controls.Add(this.radioButtonSince);
             this.groupBoxDatesRange.Controls.Add(this.radioButtonLastQuoute);
             this.groupBoxDatesRange.Controls.Add(this.radioButtonAllData);
-            this.groupBoxDatesRange.Location = new System.Drawing.Point(268, 4);
+            this.groupBoxDatesRange.Location = new System.Drawing.Point(268, 31);
             this.groupBoxDatesRange.Name = "groupBoxDatesRange";
-            this.groupBoxDatesRange.Size = new System.Drawing.Size(244, 109);
+            this.groupBoxDatesRange.Size = new System.Drawing.Size(244, 126);
             this.groupBoxDatesRange.TabIndex = 1;
             this.groupBoxDatesRange.TabStop = false;
             this.groupBoxDatesRange.Text = "Range";
@@ -312,9 +329,9 @@
             this.groupBoxTicker.Controls.Add(this.labelExchange);
             this.groupBoxTicker.Controls.Add(this.textBoxExchange);
             this.groupBoxTicker.Controls.Add(this.textBoxTicker);
-            this.groupBoxTicker.Location = new System.Drawing.Point(2, 4);
+            this.groupBoxTicker.Location = new System.Drawing.Point(2, 31);
             this.groupBoxTicker.Name = "groupBoxTicker";
-            this.groupBoxTicker.Size = new System.Drawing.Size(215, 105);
+            this.groupBoxTicker.Size = new System.Drawing.Size(215, 122);
             this.groupBoxTicker.TabIndex = 0;
             this.groupBoxTicker.TabStop = false;
             this.groupBoxTicker.Text = "Ticker";
@@ -366,23 +383,55 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog";
             // 
-            // checkBoxZipOutput
+            // menuStrip1
             // 
-            this.checkBoxZipOutput.AutoSize = true;
-            this.checkBoxZipOutput.Location = new System.Drawing.Point(268, 23);
-            this.checkBoxZipOutput.Name = "checkBoxZipOutput";
-            this.checkBoxZipOutput.Size = new System.Drawing.Size(76, 17);
-            this.checkBoxZipOutput.TabIndex = 7;
-            this.checkBoxZipOutput.Text = "Zip Output";
-            this.checkBoxZipOutput.UseVisualStyleBackColor = true;
+            this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
+            this.symbolsToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
+            this.menuStrip1.Name = "menuStrip1";
+            this.menuStrip1.Size = new System.Drawing.Size(513, 24);
+            this.menuStrip1.TabIndex = 2;
+            this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cleanOutputToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
+            this.fileToolStripMenuItem.Text = "File";
+            // 
+            // symbolsToolStripMenuItem
+            // 
+            this.symbolsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.deleteMissedToolStripMenuItem});
+            this.symbolsToolStripMenuItem.Name = "symbolsToolStripMenuItem";
+            this.symbolsToolStripMenuItem.Size = new System.Drawing.Size(64, 20);
+            this.symbolsToolStripMenuItem.Text = "Symbols";
+            // 
+            // deleteMissedToolStripMenuItem
+            // 
+            this.deleteMissedToolStripMenuItem.Name = "deleteMissedToolStripMenuItem";
+            this.deleteMissedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteMissedToolStripMenuItem.Text = "Delete Missed";
+            this.deleteMissedToolStripMenuItem.Click += new System.EventHandler(this.deleteMissedToolStripMenuItem_Click);
+            // 
+            // cleanOutputToolStripMenuItem
+            // 
+            this.cleanOutputToolStripMenuItem.Name = "cleanOutputToolStripMenuItem";
+            this.cleanOutputToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.cleanOutputToolStripMenuItem.Text = "Clean Output";
+            this.cleanOutputToolStripMenuItem.Click += new System.EventHandler(this.cleanOutputToolStripMenuItem_Click);
             // 
             // FormGoogleFinanceTest
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(519, 599);
+            this.ClientSize = new System.Drawing.Size(519, 641);
             this.Controls.Add(this.tableLayoutPanel);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.MinimumSize = new System.Drawing.Size(16, 435);
             this.Name = "FormGoogleFinanceTest";
@@ -394,10 +443,13 @@
             this.groupBoxURL.ResumeLayout(false);
             this.groupBoxURL.PerformLayout();
             this.panelURLData.ResumeLayout(false);
+            this.panelURLData.PerformLayout();
             this.groupBoxDatesRange.ResumeLayout(false);
             this.groupBoxDatesRange.PerformLayout();
             this.groupBoxTicker.ResumeLayout(false);
             this.groupBoxTicker.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -433,6 +485,11 @@
         private System.Windows.Forms.Button buttonCheckDataFormat;
         private System.Windows.Forms.Button buttonMoveData;
         private System.Windows.Forms.CheckBox checkBoxZipOutput;
+        private System.Windows.Forms.MenuStrip menuStrip1;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem symbolsToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteMissedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem cleanOutputToolStripMenuItem;
         
     }
 }

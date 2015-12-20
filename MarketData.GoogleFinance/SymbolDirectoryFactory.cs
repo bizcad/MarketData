@@ -39,12 +39,6 @@ namespace MarketData.GoogleFinance
             string symboldirectory = singleLetterDirectoryInfo.FullName;
             if (!symboldirectory.EndsWith(@"\"))
                 symboldirectory += @"\";
-            if (!symboldirectory.EndsWith("minute"))
-            {
-                symboldirectory += "minute";
-            }
-            if (!symboldirectory.EndsWith(@"\"))
-                symboldirectory += @"\";
 
             symboldirectory += symbol;
 

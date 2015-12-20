@@ -13,15 +13,18 @@
  * limitations under the License.
 */
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
 using System.Diagnostics;
+using System.Drawing.Text;
 using System.Globalization;
 using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Windows.Forms.VisualStyles;
 using MarketData.GoogleFinance;
 using MarketData.ToolBox;
 
@@ -38,7 +41,7 @@ namespace QuantConnect.GoogleFinanceUI
         private NameValueCollection appSettings;
         private string _defaultOutputDirectory;
         //private DownloadURIBuilder uriBuilder;
-
+        private Logger errorLogger = new Logger("ErrorLog.txt");
 
         #endregion
 
@@ -88,7 +91,7 @@ namespace QuantConnect.GoogleFinanceUI
             var directory = GetSaveDirectory();
             if (directory.Length == 0)
                 directory = Config.GetDefaultDownloadDirectory();
-                
+
             string path = directory + @"\" + saveToFilename;
             FileInfo info = new FileInfo(path);
             using (StreamWriter sw = new StreamWriter(info.FullName))
@@ -164,7 +167,7 @@ namespace QuantConnect.GoogleFinanceUI
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception(ex.Message);
+
                 }
 
 
@@ -266,7 +269,7 @@ namespace QuantConnect.GoogleFinanceUI
             //if (textBoxExchange.Text.Length > 0)
             //    sb.Append(textBoxExchange.Text + "_");
             sb.Append(textBoxTicker.Text);
-            
+
             if (checkBoxRawData.Checked)
             {
                 sb.Append("RawData");
@@ -388,8 +391,7 @@ namespace QuantConnect.GoogleFinanceUI
                 if (!String.IsNullOrEmpty(errorMessage))
                 {
                     richTextBoxData.Text = errorMessage;
-                    ErrorFunction(errorMessage);
-
+                    ErrorFunction(errorMessage, new Exception(errorMessage));
                 }
                 else
                 {
@@ -408,14 +410,14 @@ namespace QuantConnect.GoogleFinanceUI
             DirectoryInfo root;
             if (sourceRoot.Length == 0)
                 throw new Exception("no source");
-            
-                root = new DirectoryInfo(sourceRoot);
-            
+
+            root = new DirectoryInfo(sourceRoot);
+
             var subdirs1 = root.GetDirectories();
 
             foreach (DirectoryInfo info1 in subdirs1)
             {
-                if(!Directory.Exists(info1.FullName))
+                if (!Directory.Exists(info1.FullName))
                     destRoot.CreateSubdirectory(info1.Name);
 
                 //System.Threading.Thread.Sleep(100);
@@ -583,14 +585,9 @@ namespace QuantConnect.GoogleFinanceUI
         #endregion
 
         #region Useful methods
-        private void ErrorFunction(string errorMessage)
+        private void ErrorFunction(string errorMessage, Exception ex)
         {
-            if (String.IsNullOrEmpty(errorMessage))
-            {
-                Debug.Fail("No error message.");
-                return;
-            }
-
+            errorLogger.Log(ex.Message + ex.StackTrace);
             MessageBox.Show(errorMessage, Text, MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
@@ -660,7 +657,7 @@ namespace QuantConnect.GoogleFinanceUI
         {
             if (String.IsNullOrEmpty(richTextBoxData.Text))
             {
-                ErrorFunction("No data to save!");
+                ErrorFunction("No data to save!", new InvalidDataException("No data in rich text box to save."));
                 return;
             }
 
@@ -671,7 +668,7 @@ namespace QuantConnect.GoogleFinanceUI
             }
             catch (Exception exc)
             {
-                ErrorFunction(exc.Message);
+                ErrorFunction(exc.Message, exc);
             }
         }
         private void textBoxURL_TextChanged(object sender, EventArgs e)
@@ -695,7 +692,7 @@ namespace QuantConnect.GoogleFinanceUI
             }
             catch (Exception exc)
             {
-                ErrorFunction(exc.Message);
+                ErrorFunction(exc.Message, exc);
             }
             finally
             {
@@ -785,7 +782,7 @@ namespace QuantConnect.GoogleFinanceUI
         // From nasdaq  <a href="companies-by-industry.aspx?exchange=NYSE&amp;render=download" rel="nofollow"><b>Download this list</b></a>
         private async void buttonList_Click(object sender, EventArgs e)
         {
-            string tickerListFilename = GetTickerList();
+            string tickerListFilename = GetTickerListFilepath();
             if (tickerListFilename != string.Empty)
             {
                 FileInfo tickerListInfo = new FileInfo(tickerListFilename);
@@ -815,6 +812,7 @@ namespace QuantConnect.GoogleFinanceUI
                                 ZipOutput = true,
                                 OutputDirectory = directory
                             };
+                            minuteDownloader.logger = new Logger("MinuteLog.txt");
                             await minuteDownloader.DownloadDataFromListAsync();
                         }
                         if (radioButtonAllData.Checked)
@@ -824,12 +822,13 @@ namespace QuantConnect.GoogleFinanceUI
                                 ZipOutput = true,
                                 OutputDirectory = directory
                             };
+                            allDataDownloader.logger = new Logger("DailyLog.txt");
                             await allDataDownloader.DownloadDataFromListAsync();
                         }
                     }
                     catch (Exception exc)
                     {
-                        ErrorFunction(exc.Message);
+                        ErrorFunction(exc.Message, exc);
                     }
                     finally
                     {
@@ -901,8 +900,8 @@ namespace QuantConnect.GoogleFinanceUI
             return string.Empty;
         }
         #endregion
-        
-        private string GetTickerList()
+
+        private string GetTickerListFilepath()
         {
             var directory = Config.GetDefaultDownloadDirectory();
             openFileDialog1.CheckFileExists = true;
@@ -912,6 +911,141 @@ namespace QuantConnect.GoogleFinanceUI
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
                 return openFileDialog1.FileName;
+            }
+            return string.Empty;
+        }
+
+        private void deleteMissedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DeleteMissedSymbols();
+        }
+
+        private void DeleteMissedSymbols()
+        {
+            int badcounter = 0;
+            int goodcounter = 0;
+            int totalcounter = 0;
+
+            string tickerListFilename = GetTickerListFilepath();
+            if (tickerListFilename != string.Empty)
+            {
+                var badsymbollist = GetBadSymbolList();
+                if (badsymbollist.Count > 0)
+                {
+                    Cursor currentCursor = Cursor.Current;
+                    currentCursor = Cursors.WaitCursor;
+                    using (var sr = new StreamReader(tickerListFilename))
+                    {
+                        using (var sw = new StreamWriter(tickerListFilename + ".bak"))
+                        {
+                            while (!sr.EndOfStream)
+                            {
+                                string line = sr.ReadLine();
+                                totalcounter++;
+                                var linearr = line.Split(',');
+                                if (!badsymbollist.Contains(linearr[0]))
+                                {
+                                    sw.WriteLine(line);
+                                    goodcounter++;
+                                }
+                                else
+                                {
+                                    badcounter++;
+                                }
+                            }
+                            sw.Flush();
+                            sw.Close();
+                        }
+                    }
+
+                    Cursor.Current = currentCursor;
+                    MessageBox.Show(string.Format("badcounter  {0}\ngoodcounter {1}\ntotalcounter {2}\nverified {3}", badcounter, goodcounter, totalcounter, badcounter + goodcounter == totalcounter));
+                }
+            }
+
+        }
+        private List<string> GetBadSymbolList()
+        {
+            var directory = AssemblyLocator.ExecutingDirectory();
+            openFileDialog1.CheckFileExists = true;
+            openFileDialog1.InitialDirectory = directory;
+            openFileDialog1.Title = @"Select Bad Symbol List";
+
+            List<string> badsymbollist = new List<string>();
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                using (StreamReader sr = new StreamReader(openFileDialog1.FileName))
+                {
+                    while (!sr.EndOfStream)
+                    {
+                        var arr = sr.ReadLine().Split(' ');
+                        badsymbollist.Add(arr[0]);
+                    }
+                }
+                return badsymbollist;
+            }
+            return null;
+        }
+
+        private void cleanOutputToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Cursor currentCursor = Cursor.Current;
+            currentCursor = Cursors.WaitCursor;
+
+            CleanOutputFiles();
+
+            Cursor.Current = currentCursor;
+        }
+
+        private void CleanOutputFiles()
+        {
+            StringBuilder sb = new StringBuilder();
+            int counter = 0;
+            List<string> badsymbollist = GetBadSymbolList();
+            if (badsymbollist != null)
+            {
+                foreach (string symbol in badsymbollist)
+                {
+                    RemoveDailyZipFile(symbol);
+                    string removedsymbol = RemoveMinuteDirectory(symbol);
+                    if (removedsymbol.Length > 0)
+                    {
+                        sb.AppendLine(removedsymbol);
+                        counter++;
+                    }
+
+                }
+                MessageBox.Show(string.Format("{0} Symbols Removed  {1}", counter, sb));
+            }
+
+        }
+
+        private void RemoveDailyZipFile(string symbol)
+        {
+            var directory = Config.GetDefaultDownloadDirectory();
+            DirectoryInfo dailyDirectoryInfo = new DirectoryInfo(directory + @"equity\usa\daily\");
+
+            FileInfo info = new FileInfo(dailyDirectoryInfo.FullName + symbol + ".zip");
+            if (info.Exists)
+            {
+                info.Delete();
+            }
+        }
+
+        private string RemoveMinuteDirectory(string symbol)
+        {
+            var directory = Config.GetDefaultDownloadDirectory();
+            DirectoryInfo info = new DirectoryInfo(directory + @"equity\usa\minute\" + symbol);
+            if (info.Exists)
+            {
+                var files = info.GetFiles();
+                foreach (var file in files)
+                {
+                    file.Delete();
+                }
+                info.Delete();
+                return info.Name;
             }
             return string.Empty;
         }
