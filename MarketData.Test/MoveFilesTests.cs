@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using MarketData.GoogleFinance;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -66,5 +67,12 @@ namespace MarketData.Test
             FileMover.MoveFiles(new DirectoryInfo(@"H:\GoogleFinanceData\NYSE\"));
             Assert.IsTrue(File.Exists(@"H:\GoogleFinanceData\equity\usa\minute\ATT\20150519_trade.zip"));
         }
+        [TestMethod]
+        public void RenamesInteriorFileInZipFile()
+        {
+            FileMover.RenameInteriorFiles(new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\"));
+            Assert.IsTrue(true);
+        }
+
     }
 }

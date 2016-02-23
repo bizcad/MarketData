@@ -40,6 +40,8 @@ namespace MarketData.GoogleFinanceDownloader
             try
             {
                 Arguments commandLine = new Arguments(args);
+                if (args[0] == "-r")
+                    RenameInteriorFiles();
 
                 GetHelp(commandLine);
                 // Defalult to minute unless the user specifies eod
@@ -404,5 +406,9 @@ namespace MarketData.GoogleFinanceDownloader
             return sb.ToString();
         }
 
+        private static void RenameInteriorFiles()
+        {
+            FileMover.RenameInteriorFiles(new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\"));
+        }
     }
 }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketData.ToolBox;
 
 namespace MarketData.GoogleFinance
 {
@@ -38,7 +39,7 @@ namespace MarketData.GoogleFinance
                                 string comment = "";
                             }
                         }
-                        
+
                         Debug.WriteLine(info3.Name);
 
                         var files = info3.GetFiles();
@@ -67,5 +68,25 @@ namespace MarketData.GoogleFinance
             }
         }
 
+        public static void RenameInteriorFiles(DirectoryInfo sourceRoot)
+        {
+            var subdirs1 = sourceRoot.GetDirectories();
+
+            foreach (var file1 in subdirs1
+                .Where(info1 => string.Compare(info1.Name, "COF", StringComparison.Ordinal) >= 0)
+                .Select(info1 => info1.GetFiles())
+                .SelectMany(files => files))
+            {
+                try
+                {
+                    Compression.RenameInternal(file1);
+                    //System.Threading.Thread.Sleep(150);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception(ex.Message + file1.FullName);
+                }
+            }
+        }
     }
 }

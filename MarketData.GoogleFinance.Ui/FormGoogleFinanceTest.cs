@@ -1049,5 +1049,10 @@ namespace QuantConnect.GoogleFinanceUI
             }
             return string.Empty;
         }
+
+        private void interiorFileNameToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FileMover.RenameInteriorFiles(new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\"));
+        }
     }
 }

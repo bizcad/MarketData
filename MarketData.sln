@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.Test", "MarketDa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.GoogleFinanceDownloader", "MarketData.GoogleFinanceDownloader\MarketData.GoogleFinanceDownloader.csproj", "{799705E7-B166-4E0D-AAEA-BD274616C8C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.YahooFinance", "MarketData.YahooFinance\MarketData.YahooFinance.csproj", "{D59F59CC-3FFF-4F2A-A1EB-BC34181FB506}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PublishScripts", "PublishScripts", "{A2681FCF-8F4B-4589-8571-61333940B70C}"
 	ProjectSection(SolutionItems) = preProject
 		PublishScripts\AzureWebsitePublishModule.psm1 = PublishScripts\AzureWebsitePublishModule.psm1
@@ -52,10 +50,6 @@ Global
 		{799705E7-B166-4E0D-AAEA-BD274616C8C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{799705E7-B166-4E0D-AAEA-BD274616C8C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{799705E7-B166-4E0D-AAEA-BD274616C8C2}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D59F59CC-3FFF-4F2A-A1EB-BC34181FB506}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D59F59CC-3FFF-4F2A-A1EB-BC34181FB506}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D59F59CC-3FFF-4F2A-A1EB-BC34181FB506}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D59F59CC-3FFF-4F2A-A1EB-BC34181FB506}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

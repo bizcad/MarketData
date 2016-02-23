@@ -50,14 +50,15 @@
             this.labelExchange = new System.Windows.Forms.Label();
             this.textBoxExchange = new System.Windows.Forms.TextBox();
             this.textBoxTicker = new System.Windows.Forms.TextBox();
+            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.cleanOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.symbolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteMissedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.symbolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteMissedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.cleanOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.interiorFileNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel.SuspendLayout();
             this.groupBoxData.SuspendLayout();
             this.groupBoxURL.SuspendLayout();
@@ -374,15 +375,6 @@
             this.textBoxTicker.Text = "SPY";
             this.textBoxTicker.TextChanged += new System.EventHandler(this.uriParameterControl_ValueChanged);
             // 
-            // saveFileDialog
-            // 
-            this.saveFileDialog.FileName = "GogleFinanceTest.txt";
-            this.saveFileDialog.Filter = "All files (*.*)|*.*";
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog";
-            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -397,10 +389,18 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.cleanOutputToolStripMenuItem});
+            this.cleanOutputToolStripMenuItem,
+            this.interiorFileNameToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "File";
+            // 
+            // cleanOutputToolStripMenuItem
+            // 
+            this.cleanOutputToolStripMenuItem.Name = "cleanOutputToolStripMenuItem";
+            this.cleanOutputToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.cleanOutputToolStripMenuItem.Text = "Clean Output";
+            this.cleanOutputToolStripMenuItem.Click += new System.EventHandler(this.cleanOutputToolStripMenuItem_Click);
             // 
             // symbolsToolStripMenuItem
             // 
@@ -413,16 +413,25 @@
             // deleteMissedToolStripMenuItem
             // 
             this.deleteMissedToolStripMenuItem.Name = "deleteMissedToolStripMenuItem";
-            this.deleteMissedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteMissedToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.deleteMissedToolStripMenuItem.Text = "Delete Missed";
             this.deleteMissedToolStripMenuItem.Click += new System.EventHandler(this.deleteMissedToolStripMenuItem_Click);
             // 
-            // cleanOutputToolStripMenuItem
+            // saveFileDialog
             // 
-            this.cleanOutputToolStripMenuItem.Name = "cleanOutputToolStripMenuItem";
-            this.cleanOutputToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
-            this.cleanOutputToolStripMenuItem.Text = "Clean Output";
-            this.cleanOutputToolStripMenuItem.Click += new System.EventHandler(this.cleanOutputToolStripMenuItem_Click);
+            this.saveFileDialog.FileName = "GogleFinanceTest.txt";
+            this.saveFileDialog.Filter = "All files (*.*)|*.*";
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog";
+            // 
+            // interiorFileNameToolStripMenuItem
+            // 
+            this.interiorFileNameToolStripMenuItem.Name = "interiorFileNameToolStripMenuItem";
+            this.interiorFileNameToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.interiorFileNameToolStripMenuItem.Text = "InteriorFileName";
+            this.interiorFileNameToolStripMenuItem.Click += new System.EventHandler(this.interiorFileNameToolStripMenuItem_Click);
             // 
             // FormGoogleFinanceTest
             // 
@@ -490,6 +499,7 @@
         private System.Windows.Forms.ToolStripMenuItem symbolsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteMissedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cleanOutputToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem interiorFileNameToolStripMenuItem;
         
     }
 }
