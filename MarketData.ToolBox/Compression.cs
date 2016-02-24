@@ -132,34 +132,48 @@ namespace MarketData.ToolBox
             string contents = string.Empty;
             string internalFilename = string.Empty;
             string newInternalFilename = info.Name.Replace(".zip", ".csv");
-            
-            using (ZipFile zip = ZipFile.Read(info.FullName))
+            if (info.Name.Contains(".zip"))
             {
-                foreach (ZipEntry entry in zip.Entries.Where(entry => entry.FileName.Contains("Minute")))
+                try
                 {
-                    internalFilename = string.Empty;
-                    if (entry.FileName != info.Name.Replace(".zip", ".csv"))
+                    using (ZipFile zip = ZipFile.Read(info.FullName))
                     {
-                        internalFilename = entry.FileName;
+                        foreach (ZipEntry entry in zip.Entries.Where(entry => entry.FileName.Contains("Minute")))
+                        {
+                            internalFilename = string.Empty;
+                            if (entry.FileName != info.Name.Replace(".zip", ".csv"))
+                            {
+                                internalFilename = entry.FileName;
+                            }
+                        }
+                    }
+
+                    try
+                    {
+                        if (internalFilename.Length <= 0) return;
+                        string data = Unzip(info.FullName, internalFilename);
+                        File.Delete(info.FullName);
+                        //Thread.Sleep(250);
+                        Zip(info.FullName, newInternalFilename, data);
+                        Console.WriteLine(info.FullName);
+                        //Thread.Sleep(150);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
                     }
                 }
-            }
+                catch (ZipException ionicException)
+                {
+                    Console.WriteLine(ionicException);
+                    File.Delete(info.FullName);
+                }
 
-            try
+            }
+            else
             {
-                if (internalFilename.Length <= 0) return;
-                string data = Unzip(info.FullName, internalFilename);
                 File.Delete(info.FullName);
-                //Thread.Sleep(250);
-                Zip(info.FullName, newInternalFilename, data);
-                Console.WriteLine(info.FullName);
-                //Thread.Sleep(150);
             }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }            
-
         }
 
         public static void AddTextToZip(string zipPath, string internalFilename, string data)

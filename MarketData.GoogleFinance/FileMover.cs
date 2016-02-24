@@ -73,7 +73,7 @@ namespace MarketData.GoogleFinance
             var subdirs1 = sourceRoot.GetDirectories();
 
             foreach (var file1 in subdirs1
-                .Where(info1 => string.Compare(info1.Name, "COF", StringComparison.Ordinal) >= 0)
+                .Where(info1 => string.Compare(info1.Name, "ICB", StringComparison.Ordinal) >= 0)
                 .Select(info1 => info1.GetFiles())
                 .SelectMany(files => files))
             {
@@ -82,8 +82,10 @@ namespace MarketData.GoogleFinance
                     Compression.RenameInternal(file1);
                     //System.Threading.Thread.Sleep(150);
                 }
+               
                 catch (Exception ex)
                 {
+
                     throw new Exception(ex.Message + file1.FullName);
                 }
             }
