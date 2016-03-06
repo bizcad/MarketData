@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MarketData.GoogleFinance;
 
 namespace MarketData.GoogleFinanceDownloader
 {
@@ -34,18 +35,30 @@ namespace MarketData.GoogleFinanceDownloader
             string destfolder = @"I:\Dropbox\JJ\data\equity\usa\daily\";
             FileInfo destfile = new FileInfo(destfolder + symbol + ".zip");
             FileInfo f = new FileInfo(sourcefolder + symbol + ".zip");
-
-
-            try
+            if (f.Exists)
             {
-                File.Copy(f.FullName, destfile.FullName, true);
+                try
+                {
+                    File.Copy(f.FullName, destfile.FullName, true);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                }
+                Console.WriteLine("Copied 1 daily file {0}", destfile.Name);
             }
-            catch (Exception e)
+            else
             {
-                Console.WriteLine(e);
+                Console.WriteLine("File Not Copied {0}", f.Name);
+                using (var sw = new StreamWriter(AssemblyLocator.ExecutingDirectory() + "CopyDailyFailed.txt", true))
+                {
+                    sw.WriteLine("File Not Copied {0}", f.Name);
+                    sw.Flush();
+                    sw.Close();
+                }
             }
-            Console.WriteLine("Copied 1 daily file {0}", destfile.Name);
         }
+
 
 
 
@@ -54,24 +67,33 @@ namespace MarketData.GoogleFinanceDownloader
             filesCopied = 0;
             string sourcefolder = @"H:\GoogleFinanceData\equity\usa\minute\" + symbol;
             string destfolder = @"I:\Dropbox\JJ\data\equity\usa\minute\" + symbol;
-            FileInfo[] sourceFileInfos = new DirectoryInfo(sourcefolder).GetFiles();
-            if (!Directory.Exists(destfolder))
-                Directory.CreateDirectory(destfolder);
-            FileInfo[] destFileInfos = new DirectoryInfo(destfolder).GetFiles();
-            foreach (FileInfo f in sourceFileInfos)
+            var di = new DirectoryInfo(sourcefolder);
+            if (di.Exists)
             {
-                string destfile = destfolder + @"\" + f.Name;
-                if (!File.Exists(destfile))
+                FileInfo[] sourceFileInfos = di.GetFiles();
+                if (!Directory.Exists(destfolder))
+                    Directory.CreateDirectory(destfolder);
+                FileInfo[] destFileInfos = new DirectoryInfo(destfolder).GetFiles();
+                foreach (FileInfo f in sourceFileInfos)
                 {
-                    try
+                    string destfile = destfolder + @"\" + f.Name;
+                    if (!File.Exists(destfile))
                     {
-                        File.Copy(f.FullName, destfile);
+                        try
+                        {
+                            File.Copy(f.FullName, destfile);
+                        }
+                        catch (Exception e)
+                        {
+                            using (var sw = new StreamWriter(AssemblyLocator.ExecutingDirectory() + "CopyMinuteFailed.txt", true))
+                            {
+                                sw.WriteLine("File Not Copied {0}\n{1}\n{2}", f.Name, e.Message, e.StackTrace);
+                                sw.Flush();
+                                sw.Close();
+                            }
+                        }
+                        filesCopied++;
                     }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
-                    filesCopied++;
                 }
             }
         }

@@ -42,65 +42,70 @@ namespace MarketData.GoogleFinanceDownloader
                 Arguments commandLine = new Arguments(args);
                 if (args[0] == "-r")
                     RenameInteriorFiles();
-
-                GetHelp(commandLine);
-                // Defalult to minute unless the user specifies eod
-                var resolution = GetResolution(commandLine);
-                var runmode = GetRunmode(commandLine);
-                var destinationDirectory = GetDestinationDirectory(commandLine);
-                var defaultInputFile = GetDefaultInputFile(commandLine);
-                DisplayInteractiveInstructions(runmode);
-
-                GetOptionsInteractive(runmode, ref defaultInputFile, ref destinationDirectory, ref resolution);
-                if (runmode == Enums.Runmode.Automatic)
-                {
-                    Console.WriteLine("1. Source file for ticker symbol and exchange list: \n" + defaultInputFile);
-                    Console.WriteLine("2. Destination LEAN Data directory: \n" + destinationDirectory);
-                    Console.WriteLine("3. Both minute and eod will run. ");
-                }
-
-                //Validate the user input:
-                Validate(defaultInputFile, destinationDirectory, resolution.ToString());
-
-                //Remove the final slash to make the path building easier:
-                defaultInputFile = StripFinalSlash(defaultInputFile);
-                destinationDirectory = StripFinalSlash(destinationDirectory);
-                string[] validatedArgs = new string[3];
-                validatedArgs[0] = defaultInputFile;
-                validatedArgs[1] = destinationDirectory;
-                validatedArgs[2] = resolution.ToString();
-
-                Console.WriteLine("Processing Files ...");
-                if (runmode == Enums.Runmode.Automatic)
-                {
-
-                    validatedArgs[2] = "minute";
-                    Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
-
-                    validatedArgs[2] = "eod";
-                    Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
-
-                    FileCopier fc = new FileCopier();
-                    int filescopied = fc.CopyFiles();
-
-                }
                 else
                 {
-                    Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
-                }
-                
+                    GetHelp(commandLine);
+                    // Defalult to minute unless the user specifies eod
+                    var resolution = GetResolution(commandLine);
+                    var runmode = GetRunmode(commandLine);
+                    var destinationDirectory = GetDestinationDirectory(commandLine);
+                    var defaultInputFile = GetDefaultInputFile(commandLine);
+                    DisplayInteractiveInstructions(runmode);
 
+                    GetOptionsInteractive(runmode, ref defaultInputFile, ref destinationDirectory, ref resolution);
+                    if (runmode == Enums.Runmode.Automatic)
+                    {
+                        Console.WriteLine("1. Source file for ticker symbol and exchange list: \n" + defaultInputFile);
+                        Console.WriteLine("2. Destination LEAN Data directory: \n" + destinationDirectory);
+                        Console.WriteLine("3. Both minute and eod will run. ");
+                    }
+
+                    //Validate the user input:
+                    Validate(defaultInputFile, destinationDirectory, resolution.ToString());
+
+                    //Remove the final slash to make the path building easier:
+                    defaultInputFile = StripFinalSlash(defaultInputFile);
+                    destinationDirectory = StripFinalSlash(destinationDirectory);
+                    string[] validatedArgs = new string[3];
+                    validatedArgs[0] = defaultInputFile;
+                    validatedArgs[1] = destinationDirectory;
+                    validatedArgs[2] = resolution.ToString();
+
+                    Console.WriteLine("Processing Files ...");
+                    if (runmode == Enums.Runmode.Automatic)
+                    {
+
+                        validatedArgs[2] = "minute";
+                        Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
+
+                        validatedArgs[2] = "eod";
+                        Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
+
+                        FileCopier fc = new FileCopier();
+                        int filescopied = fc.CopyFiles();
+
+                    }
+                    else
+                    {
+                        Task.Run(async () => { await MainAsync(validatedArgs); }).Wait();
+                    }
+
+                }
 
                 // if auto, just run the thing and exit
                 //if (runmode == Enums.Runmode.Automatic)
                 //{
-                    Console.WriteLine("Done. Press any key to exit.");
-                    Console.ReadKey();
+
                 //}
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message + ex.StackTrace);
+            }
+            finally
+            {
+                Console.WriteLine("Done. Press any key to exit.");
+                Console.ReadKey();
             }
         }
 
@@ -243,7 +248,7 @@ namespace MarketData.GoogleFinanceDownloader
         /// </summary>
         /// <param name="args">string[] - a validated copy of the command line args</param>
         /// <returns>nothing</returns>
-        private async static Task MainAsync(string[] args)
+        private static async Task MainAsync(string[] args)
         {
             Logger logger = new Logger("errors.txt");
             if (args[2] == "minute")
@@ -408,7 +413,10 @@ namespace MarketData.GoogleFinanceDownloader
 
         private static void RenameInteriorFiles()
         {
-            FileMover.RenameInteriorFiles(new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\"));
+            // @"H:\GoogleFinanceData\equity\usa\minute\"
+            string basepath = @"I:\Dropbox\JJ\data\equity\usa\minute";
+            FileMover.RenameInteriorFiles(new DirectoryInfo(basepath));
+
         }
     }
 }
