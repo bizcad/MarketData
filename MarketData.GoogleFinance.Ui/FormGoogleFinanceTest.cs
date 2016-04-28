@@ -1052,6 +1052,7 @@ namespace QuantConnect.GoogleFinanceUI
         private void interiorFileNameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FileMover.RenameInteriorFiles(new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\"));
+
         }
 
         private void getBarchartToolStripMenuItem_Click(object sender, EventArgs e)
