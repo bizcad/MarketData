@@ -246,7 +246,7 @@ namespace MarketData.GoogleFinance
                 string historicalData = processor.processStreamMadeOfOneDayLinesToExtractHistoricalData(ms, out errorMessage);
                 if (!String.IsNullOrEmpty(errorMessage))
                 {
-                    string message = string.Format("{0} Daily Ticker had an error. {1}", ticker, errorMessage);
+                    string message = $"{ticker} {DateTime.Now} Daily Ticker had an error. {errorMessage}";
                     logger.Log(message);
                 }
                 else

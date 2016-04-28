@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.GoogleFinance", "MarketData.GoogleFinance\MarketData.GoogleFinance.csproj", "{CCD6E605-2AED-4AA5-822E-7EE04398CE8A}"
 EndProject
@@ -23,6 +23,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Configurations", "Configura
 	ProjectSection(SolutionItems) = preProject
 		PublishScripts\Configurations\MarketDataWeb-WAWS-dev.json = PublishScripts\Configurations\MarketDataWeb-WAWS-dev.json
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.Barchart", "MarketData.Barchart\MarketData.Barchart.csproj", "{F4113271-0543-409B-8B87-179EA31957CE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.CME", "MarketData.CME\MarketData.CME.csproj", "{AF895656-5D3B-47B1-BBE2-9B088300FD3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.Volatility", "MarketData.Volatility\MarketData.Volatility.csproj", "{39F36823-0201-46FD-9E2B-41AB25DB6C79}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -50,6 +56,18 @@ Global
 		{799705E7-B166-4E0D-AAEA-BD274616C8C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{799705E7-B166-4E0D-AAEA-BD274616C8C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{799705E7-B166-4E0D-AAEA-BD274616C8C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F4113271-0543-409B-8B87-179EA31957CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F4113271-0543-409B-8B87-179EA31957CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F4113271-0543-409B-8B87-179EA31957CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F4113271-0543-409B-8B87-179EA31957CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF895656-5D3B-47B1-BBE2-9B088300FD3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF895656-5D3B-47B1-BBE2-9B088300FD3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF895656-5D3B-47B1-BBE2-9B088300FD3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF895656-5D3B-47B1-BBE2-9B088300FD3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39F36823-0201-46FD-9E2B-41AB25DB6C79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39F36823-0201-46FD-9E2B-41AB25DB6C79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39F36823-0201-46FD-9E2B-41AB25DB6C79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39F36823-0201-46FD-9E2B-41AB25DB6C79}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

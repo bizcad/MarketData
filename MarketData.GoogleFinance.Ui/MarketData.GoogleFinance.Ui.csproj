@@ -80,6 +80,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MarketData.Barchart\MarketData.Barchart.csproj">
+      <Project>{F4113271-0543-409B-8B87-179EA31957CE}</Project>
+      <Name>MarketData.Barchart</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MarketData.GoogleFinance\MarketData.GoogleFinance.csproj">
       <Project>{ccd6e605-2aed-4aa5-822e-7ee04398ce8a}</Project>
       <Name>MarketData.GoogleFinance</Name>

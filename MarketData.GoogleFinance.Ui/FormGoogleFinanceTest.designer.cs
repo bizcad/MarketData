@@ -53,12 +53,14 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.cleanOutputToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.interiorFileNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.symbolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteMissedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.interiorFileNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.painStrikeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.getBarchartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel.SuspendLayout();
             this.groupBoxData.SuspendLayout();
             this.groupBoxURL.SuspendLayout();
@@ -379,7 +381,8 @@
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
-            this.symbolsToolStripMenuItem});
+            this.symbolsToolStripMenuItem,
+            this.painStrikeToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(513, 24);
@@ -401,6 +404,13 @@
             this.cleanOutputToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
             this.cleanOutputToolStripMenuItem.Text = "Clean Output";
             this.cleanOutputToolStripMenuItem.Click += new System.EventHandler(this.cleanOutputToolStripMenuItem_Click);
+            // 
+            // interiorFileNameToolStripMenuItem
+            // 
+            this.interiorFileNameToolStripMenuItem.Name = "interiorFileNameToolStripMenuItem";
+            this.interiorFileNameToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
+            this.interiorFileNameToolStripMenuItem.Text = "InteriorFileName";
+            this.interiorFileNameToolStripMenuItem.Click += new System.EventHandler(this.interiorFileNameToolStripMenuItem_Click);
             // 
             // symbolsToolStripMenuItem
             // 
@@ -426,12 +436,20 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog";
             // 
-            // interiorFileNameToolStripMenuItem
+            // painStrikeToolStripMenuItem
             // 
-            this.interiorFileNameToolStripMenuItem.Name = "interiorFileNameToolStripMenuItem";
-            this.interiorFileNameToolStripMenuItem.Size = new System.Drawing.Size(162, 22);
-            this.interiorFileNameToolStripMenuItem.Text = "InteriorFileName";
-            this.interiorFileNameToolStripMenuItem.Click += new System.EventHandler(this.interiorFileNameToolStripMenuItem_Click);
+            this.painStrikeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.getBarchartToolStripMenuItem});
+            this.painStrikeToolStripMenuItem.Name = "painStrikeToolStripMenuItem";
+            this.painStrikeToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
+            this.painStrikeToolStripMenuItem.Text = "Pain Strike";
+            // 
+            // getBarchartToolStripMenuItem
+            // 
+            this.getBarchartToolStripMenuItem.Name = "getBarchartToolStripMenuItem";
+            this.getBarchartToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.getBarchartToolStripMenuItem.Text = "Get Barchart";
+            this.getBarchartToolStripMenuItem.Click += new System.EventHandler(this.getBarchartToolStripMenuItem_Click);
             // 
             // FormGoogleFinanceTest
             // 
@@ -500,7 +518,8 @@
         private System.Windows.Forms.ToolStripMenuItem deleteMissedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem cleanOutputToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem interiorFileNameToolStripMenuItem;
-        
+        private System.Windows.Forms.ToolStripMenuItem painStrikeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem getBarchartToolStripMenuItem;
     }
 }
 

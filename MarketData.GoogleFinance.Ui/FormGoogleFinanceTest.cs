@@ -25,6 +25,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using MarketData.Barchart;
 using MarketData.GoogleFinance;
 using MarketData.ToolBox;
 
@@ -167,7 +168,7 @@ namespace QuantConnect.GoogleFinanceUI
                 }
                 catch (Exception ex)
                 {
-
+                    throw new Exception(ex.Message);
                 }
 
 
@@ -488,8 +489,6 @@ namespace QuantConnect.GoogleFinanceUI
                     try
                     {
                         Debug.WriteLine(singleInfo.FullName);
-                        if (singleInfo.FullName.Contains("ALL-B"))
-                            Debug.WriteLine("here");
                         var fileInfos = singleInfo.GetFiles();
                         foreach (FileInfo fi in fileInfos)
                         {
@@ -1053,6 +1052,18 @@ namespace QuantConnect.GoogleFinanceUI
         private void interiorFileNameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FileMover.RenameInteriorFiles(new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\"));
+        }
+
+        private void getBarchartToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DailyDownloader dl = new DailyDownloader();
+            var list = dl.ComputeAllMinimumPains();
+            richTextBoxData.Multiline = true;
+            foreach (var item in list)
+            {
+                richTextBoxData.Text += item + "\n";
+            }
+            
         }
     }
 }

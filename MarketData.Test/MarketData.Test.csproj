@@ -35,6 +35,10 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="HtmlAgilityPack, Version=1.4.9.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.9\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.core, Version=2.6.4.14350, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\packages\NUnitTestAdapter.WithFramework.2.0.0\lib\nunit.core.dll</HintPath>
       <Private>False</Private>
@@ -56,6 +60,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -65,13 +70,17 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
   <ItemGroup>
     <Compile Include="AllDataDownloaderTests.cs" />
     <Compile Include="AssemblyLocatorTests.cs" />
+    <Compile Include="BarchartTests.cs" />
+    <Compile Include="CMETests.cs" />
     <Compile Include="CommandLineTests.cs" />
     <Compile Include="ConfigTests.cs" />
     <Compile Include="DataLocatorTests.cs" />
@@ -80,6 +89,7 @@
     <Compile Include="SymbolDirectoryFactoryTests.cs" />
     <Compile Include="SymbolListBuilderTests.cs" />
     <Compile Include="FileCopierTests.cs" />
+    <Compile Include="VolatilityTests.cs" />
     <Compile Include="YahooUriBuilderTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UnitTest2.cs" />
@@ -89,6 +99,14 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\MarketData.Barchart\MarketData.Barchart.csproj">
+      <Project>{f4113271-0543-409b-8b87-179ea31957ce}</Project>
+      <Name>MarketData.Barchart</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MarketData.CME\MarketData.CME.csproj">
+      <Project>{af895656-5d3b-47b1-bbe2-9b088300fd3a}</Project>
+      <Name>MarketData.CME</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MarketData.GoogleFinanceDownloader\MarketData.GoogleFinanceDownloader.csproj">
       <Project>{799705e7-b166-4e0d-aaea-bd274616c8c2}</Project>
       <Name>MarketData.GoogleFinanceDownloader</Name>
@@ -100,6 +118,10 @@
     <ProjectReference Include="..\MarketData.ToolBox\MarketData.ToolBox.csproj">
       <Project>{e3c5c7f7-7bfe-45e0-b414-f1ea1dfb4c02}</Project>
       <Name>MarketData.ToolBox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MarketData.Volatility\MarketData.Volatility.csproj">
+      <Project>{39f36823-0201-46fd-9e2b-41ab25db6c79}</Project>
+      <Name>MarketData.Volatility</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>

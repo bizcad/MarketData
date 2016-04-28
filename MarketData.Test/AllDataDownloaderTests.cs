@@ -133,5 +133,24 @@ namespace MarketData.Test
             Assert.IsTrue(count > 0);
 
         }
+        [Test]
+        public async Task DataForAamrq()
+        {
+            FileInfo aamqrFileInfo = new FileInfo(@"I:\Dropbox\JJ\badsymbols.csv");
+            AllDataDownloader dl = new AllDataDownloader(aamqrFileInfo.FullName, null)
+            {
+                ZipOutput = true,
+                OutputDirectory = aamqrFileInfo.DirectoryName + @"\data\"
+            };
+            dl.SymbolList = aamqrFileInfo.FullName;
+            //
+            // Puts it in I:\Dropbox\JJ\equity\daily instead of I:\Dropbox\JJ\data\equity\daily 
+            //
+            await dl.DownloadDataFromListAsync();
+            var files = new DirectoryInfo(dl.OutputDirectory).GetFiles("aamrq.*", SearchOption.AllDirectories);
+            int count = files.Count();
+            Assert.IsTrue(count > 0);
+        }
+        
     }
 }

@@ -4,6 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using MarketData.GoogleFinance;
+using MarketData.GoogleFinanceDownloader;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MarketData.Test
@@ -73,6 +74,31 @@ namespace MarketData.Test
             FileMover.RenameInteriorFiles(new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\"));
             Assert.IsTrue(true);
         }
+        /// <summary>
+        /// This method reads JJs symbols.txt and verifies that zip files exist for all entries.
+        /// In the past, aamrq was a discontinued symbol and caused it to fail.
+        /// Look in AllDataDownloaderTests for a test that adds it.
+        /// </summary>
+        [TestMethod]
+        public void TestJjNames()
+        {
+            FileInfo jjlistpath = new FileInfo(@"I:\Dropbox\JJ\symbols.txt");
+            var ret = FileMover.CheckJJList(jjlistpath);
+            Assert.IsTrue(ret);
 
+        }
+
+        [TestMethod]
+        public void SortsJjSymbols()
+        {
+            FileCopier fc = new FileCopier();
+            
+            fc.SymbolsFromFile();
+            var s = fc.Symbols;
+
+            Assert.IsTrue(s.Count > 0);
+            Assert.IsTrue(s.Contains("ABEV"));
+
+        }
     }
 }

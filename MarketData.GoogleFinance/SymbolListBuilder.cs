@@ -26,8 +26,9 @@ namespace MarketData.GoogleFinance
     /// </summary>
     public class SymbolListBuilder
     {
-        private Dictionary<string, string> symbolList = new Dictionary<string, string>();
+        public Dictionary<string, string> SymbolList { get; set; }
         private List<string> linelist = new List<string>();
+
         #region public
         /// <summary>
         /// Entry point into the class. It builds a list from a csv file 
@@ -47,7 +48,7 @@ namespace MarketData.GoogleFinance
             //  bottom of the file and having them moved to their sorted position;
             //  with the exchange in the second column
             SaveSortedSymbolList(symbolFileInfo);
-            return symbolList;
+            return SymbolList;
         }
         public string BuildSymbolsStringFromFile(FileInfo symbolFileInfo)
         {
@@ -59,7 +60,7 @@ namespace MarketData.GoogleFinance
             }
 
             StringBuilder sb = new StringBuilder();
-            foreach (var item in symbolList.Keys)
+            foreach (var item in SymbolList.Keys)
             {
                 sb.Append(item);
                 sb.Append(",");
@@ -83,8 +84,9 @@ namespace MarketData.GoogleFinance
         /// </summary>
         /// <param name="symbolFileInfo">FileInfo - Points to the symbol file</param>
         /// <returns>bool - true if the exchanges were in the file, false if any blank second column was found</returns>
-        private bool ReadSymbolFileIntoDictionary(FileInfo symbolFileInfo)
+        public bool ReadSymbolFileIntoDictionary(FileInfo symbolFileInfo)
         {
+            SymbolList = new Dictionary<string, string>();
             bool foundNoBlankExchangeColumn = true;
             using (StreamReader sr = new StreamReader(symbolFileInfo.FullName))
             {
@@ -98,7 +100,7 @@ namespace MarketData.GoogleFinance
                     {
                         string buffer = sr.ReadLine();
                         
-                        if (!buffer.Contains(","))
+                        if (buffer != null && !buffer.Contains(","))
                         {
                             buffer += ",";
                         }
@@ -106,10 +108,6 @@ namespace MarketData.GoogleFinance
                         string[] columns = buffer.Split(',');
                         string symbol = columns[0];
                         {
-                            if (columns.Length == 1)
-                            {
-                                System.Diagnostics.Debug.WriteLine("here");
-                            }
                             if (columns[1].Length == 0)
                             {
                                 foundNoBlankExchangeColumn = false;
@@ -123,13 +121,12 @@ namespace MarketData.GoogleFinance
                             }
                                 
                             // Skip duplicate symbols
-                            if (!symbolList.ContainsKey(symbol))
+                            if (!SymbolList.ContainsKey(symbol))
                             {
-                                symbolList.Add(symbol, columns[1]);
+                                SymbolList.Add(symbol, columns[1]);
                                 linelist.Add(ColumnJoiner.JoinColumns(columns));
                             }
                         }
-                        
                     }
                 }
                 catch (Exception e)

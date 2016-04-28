@@ -492,8 +492,6 @@ namespace MarketData.GoogleFinance
                 string convertedLine = formatData("Day", dt, elements[(int)Columns.open], elements[(int)Columns.high], elements[(int)Columns.low],
                     elements[(int)Columns.close], elements[(int)Columns.volume]);
 
-                if (convertedLine.StartsWith("20151216"))
-                    Debug.WriteLine("here");
                 stringResult.AppendLine(convertedLine);
                 previousDate = dt.Date;
 

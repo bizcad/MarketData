@@ -52,7 +52,7 @@ namespace MarketData.GoogleFinanceDownloader
                 Console.WriteLine("File Not Copied {0}", f.Name);
                 using (var sw = new StreamWriter(AssemblyLocator.ExecutingDirectory() + "CopyDailyFailed.txt", true))
                 {
-                    sw.WriteLine("File Not Copied {0}", f.Name);
+                    sw.WriteLine("Daily File Not Copied {0}", f.Name);
                     sw.Flush();
                     sw.Close();
                 }
@@ -87,7 +87,7 @@ namespace MarketData.GoogleFinanceDownloader
                         {
                             using (var sw = new StreamWriter(AssemblyLocator.ExecutingDirectory() + "CopyMinuteFailed.txt", true))
                             {
-                                sw.WriteLine("File Not Copied {0}\n{1}\n{2}", f.Name, e.Message, e.StackTrace);
+                                sw.WriteLine("Minute File Not Copied {0}\n{1}\n{2}", f.Name, e.Message, e.StackTrace);
                                 sw.Flush();
                                 sw.Close();
                             }
@@ -98,7 +98,7 @@ namespace MarketData.GoogleFinanceDownloader
             }
         }
 
-        private void SymbolsFromFile()
+        public void SymbolsFromFile()
         {
             #region "Read Symbols from File"
 
@@ -107,15 +107,26 @@ namespace MarketData.GoogleFinanceDownloader
             ************************************************/
             using (StreamReader sr = new StreamReader(symbolfile))
             {
-                string[] symbols = { };
                 var readLine = sr.ReadLine();
                 while (readLine != null)
                 {
-                    symbols = readLine.Split(',');
-                    Symbols.Add(symbols[0]);
+                    var symbols = readLine.Split(',');
+                    string symbol = symbols[0].Trim();
+                    if (!Symbols.Contains(symbol))
+                        Symbols.Add(symbol);
                     readLine = sr.ReadLine();
                 }
                 sr.Close();
+            }
+            Symbols.Sort();
+            using (var sw = new StreamWriter(symbolfile, false))
+            {
+                foreach (var symbol in Symbols)
+                {
+                    sw.WriteLine(symbol);
+                }
+                sw.Flush();
+                sw.Close();
             }
             #endregion
         }

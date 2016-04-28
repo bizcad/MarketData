@@ -144,7 +144,7 @@ namespace MarketData.GoogleFinance
             {
                 //if (System.String.Compare(ticker, "QCOM", System.StringComparison.Ordinal) <= 0)
                 //    continue;
-                DirectoryInfo exchangeDirectoryInfo;
+                //DirectoryInfo exchangeDirectoryInfo;
                 string symbol = ticker.Replace("^", "-").Trim();
                 if (symbol.Contains(@"\") || symbol.Contains(@"/"))
                     continue;
@@ -163,8 +163,8 @@ namespace MarketData.GoogleFinance
                     exchange = kvpair.Value;
                 }
                 // used in debugging
-                //if (ticker == "ACWV")
-                //    Debug.WriteLine("here");
+                if (ticker == "ABEV")
+                    Debug.WriteLine("here");
 
                 DirectoryInfo outputFolder;
                 if (OutputDirectory != null || OutputDirectory.Length > 0)
@@ -229,9 +229,7 @@ namespace MarketData.GoogleFinance
         {
             WebClient client = (WebClient)sender;
             var ticker = client.QueryString["symbol"];
-            string x;
-            if (ticker.Equals(@"IFT"))
-                x = "";
+
             DirectoryInfo dir = new DirectoryInfo(client.QueryString["OutputDirectory"]);
 
             using (MemoryStream ms = new MemoryStream(e.Result))
@@ -252,7 +250,7 @@ namespace MarketData.GoogleFinance
             string resultValue = dp.ProcessStreamOfOneMinuteBarsToReplaceGoogleDateWithFormatted(ms, "Millisecond", out errorMessage);
             if (!String.IsNullOrEmpty(errorMessage))
             {
-                string message = string.Format("{0} Minute Symbol had an error. {1}", symbol, errorMessage);
+                string message = $"{symbol} {DateTime.Now} Minute Symbol had an error. {errorMessage}";
                 logger.Log(message);
 
             }
