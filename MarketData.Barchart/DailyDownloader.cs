@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using HtmlAgilityPack;
 using MarketData.Barchart.Models;
 using MarketData.ToolBox.Utility;
+using Newtonsoft.Json;
 
 namespace MarketData.Barchart
 {
@@ -35,6 +36,8 @@ namespace MarketData.Barchart
         private decimal contractMinpainstrike = 0;
         private double contractMinpain = double.MaxValue;
         private string dataDir = string.Empty;
+        private ContractInfo contractInfo;
+        
         #endregion
         #region "public properties"
 
@@ -70,6 +73,10 @@ namespace MarketData.Barchart
         /// The HtmlDocument for HtmlAgilityPack
         /// </summary>
         public HtmlDocument Document;
+        /// <summary>
+        /// The dictionary of striks and the pain value associated with the strike
+        /// </summary>
+        public Dictionary<decimal, double> PainValuesDictionary = new Dictionary<decimal, double>();
 
         private int counter = 0;
         #endregion
@@ -198,7 +205,8 @@ namespace MarketData.Barchart
             {
                 var ppage = Document.DocumentNode;
                 GetHeaderDictionary(pageMode, ppage);   // Get the headers at the top of the list
-
+                //"12/16/16"
+                
                 var data = ppage.SelectSingleNode(rowSelector);
                 // Get the headers at the bottom of the list.
                 AddToHeadersDictionary(data);
@@ -213,8 +221,36 @@ namespace MarketData.Barchart
                 }
             }
 
-            SaveRowList(pageMode);
-            SaveHeaderList(pageMode);
+            try
+            {
+                decimal closingPrice = 0;
+                foreach (var key in Headers.Keys)
+                {
+                    if (key.Contains("E-Mini"))
+                        closingPrice = decimal.Parse(Headers[key]);
+                }
+                contractInfo = new ContractInfo
+                {
+                    PageMode = pageMode,
+                    ClosingPrice = closingPrice,
+                    OptionsExpirationDate = DateTime.Parse(Headers["Options Expiration"]).AddHours(23).AddMinutes(59),
+                    DaysToExpiration = decimal.Parse(Headers["Days to Expiration"]),
+                    DailyOption = Headers["Daily Options"],
+                    DailyOptionDate = DateTime.Parse(Headers["Daily Options"] + " " + DateTime.Now.Year).AddHours(23).AddMinutes(59),
+                    CallPremiumTotal = decimal.Parse(Headers["Call Premium Total"]),
+                    PutPremiumTotal = decimal.Parse(Headers["Put Premium Total"]),
+                    CallPutPremiumRatio = decimal.Parse(Headers["Call/Put Premium Ratio"]),
+                    CallOpenInterestTotal = long.Parse(Headers["Call Open Interest Total"]),
+                    PutOpenInterestTotal = long.Parse(Headers["Put Open Interest Total"]),
+                    CallPutOpenInterestRatio = decimal.Parse(Headers["Call/Put Open Interest Ratio"])
+                    
+                };
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
 
             return CsvRowsList;
         }
@@ -319,6 +355,7 @@ namespace MarketData.Barchart
         /// Computes the Pain value for each strike in the Calls and Puts Dictionaries given the current market price
         /// </summary>
         /// <param name="currentPrice">the current market price of the underlying</param>
+        /// <param name="pageMode"></param>
         /// <returns>The pain value for the current market price</returns>
         public decimal ComputePainForPrice(decimal currentPrice, string pageMode)
         {
@@ -396,25 +433,35 @@ namespace MarketData.Barchart
         /// <returns></returns>
         public string ComputeMinimumPain(string pageMode)
         {
+            PutsDictionary = new Dictionary<decimal, int>();
+            CallsDictionary = new Dictionary<decimal, int>();
+
+            PainValuesDictionary = new Dictionary<decimal, double>();
             var rowList = GetRowList(pageMode);
             GetOpenInterestListsFromRowList(rowList);
 
-            Dictionary<decimal, double> dic = new Dictionary<decimal, double>();
+            
             contractMinpainstrike = 0;
             contractMinpain = double.MaxValue;
             foreach (decimal key in PutsDictionary.Keys)
             {
 
                 double painvalue = (double)ComputePainForPrice(key, pageMode);
-                dic.Add(key, painvalue);
+                PainValuesDictionary.Add(key, painvalue);
                 if (painvalue < contractMinpain)
                 {
                     contractMinpain = painvalue;
                     contractMinpainstrike = key;
                 }
             }
-            var serializedPainValues = CsvSerializer.Serialize(",", dic, true);
-            SavePainValues(pageMode, serializedPainValues);
+            
+            SavePainValues(pageMode);
+            SaveRowList(pageMode);
+            contractInfo.MinimumPainAmount = Convert.ToDecimal(contractMinpain);
+            contractInfo.MinimumPainStrike = Convert.ToDecimal(contractMinpainstrike);
+            SaveHeaderList(pageMode);
+
+
             Debug.WriteLine("{0} {1} {2}", pageMode, contractMinpainstrike, contractMinpain);
             string ret = $"{pageMode},{contractMinpainstrike},{contractMinpain}";
             return ret;
@@ -431,9 +478,7 @@ namespace MarketData.Barchart
             var contractlist = GetContractList();
             foreach (string s in contractlist)
             {
-                PutsDictionary = new Dictionary<decimal, int>();
-                CallsDictionary = new Dictionary<decimal, int>();
-
+               
                 minimumPainList.Add(ComputeMinimumPain(s));
             }
 
@@ -554,7 +599,10 @@ namespace MarketData.Barchart
         {
             StringBuilder sb = new StringBuilder(GetDataFolder());
             sb.Append(pageMode);
-            sb.Append(".csv");
+            sb.Append("_");
+            AddDateToFilename(sb);
+            sb.Append("_");
+            sb.Append("Rows.csv");
             return sb.ToString();
         }
         /// <summary>
@@ -615,14 +663,38 @@ namespace MarketData.Barchart
                     sw.WriteLine("{0},{1}", key, Headers[key]);
                 }
             }
+            string json = JsonConvert.SerializeObject(contractInfo);
+            filename = filename.Replace(".csv", ".json");
+            using (StreamWriter sw = new StreamWriter(filename, false))
+            {
+                sw.Write(json);
+                sw.Flush();
+                sw.Close();
+            }
+
+
         }
 
         private string GetHeaderListFilename(string pageMode)
         {
             StringBuilder sb = new StringBuilder(GetDataFolder());
             sb.Append(pageMode);
+            sb.Append("_");
+            AddDateToFilename(sb);
+            sb.Append("_");
             sb.Append("Header.csv");
             return sb.ToString();
+        }
+
+        private void AddDateToFilename(StringBuilder sb)
+        {
+            sb.Append(contractInfo.OptionsExpirationDate.Year);
+            if (contractInfo.OptionsExpirationDate.Month < 10)
+                sb.Append("0");
+            sb.Append(contractInfo.OptionsExpirationDate.Month);
+            if (contractInfo.OptionsExpirationDate.Day < 10)
+                sb.Append("0");
+            sb.Append(contractInfo.OptionsExpirationDate.Day);
         }
 
         private void SaveSerializedPainRows(decimal currentPrice, string pageMode, IEnumerable<string> serializedPainRows)
@@ -640,9 +712,21 @@ namespace MarketData.Barchart
             }
         }
 
-        private void SavePainValues(string pageMode, IEnumerable<string> serializedPainValues)
+        private string GetPainValuesFilename(string pageMode)
         {
-            string filename = GetDataFolder() + $@"\PainByStrike{pageMode}.csv";
+            StringBuilder sb = new StringBuilder(GetDataFolder());
+            sb.Append(pageMode);
+            sb.Append("_");
+            AddDateToFilename(sb);
+            sb.Append("_");
+            sb.Append("Strikes.csv");
+            return sb.ToString();
+        }
+        private void SavePainValues(string pageMode)
+        {
+            var serializedPainValues = CsvSerializer.Serialize(",", PainValuesDictionary, true);
+
+            string filename = GetPainValuesFilename(pageMode);
             using (var sw = new StreamWriter(filename, false))
             {
                 foreach (var y in serializedPainValues)

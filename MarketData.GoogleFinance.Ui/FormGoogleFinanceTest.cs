@@ -1052,19 +1052,38 @@ namespace QuantConnect.GoogleFinanceUI
         private void interiorFileNameToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FileMover.RenameInteriorFiles(new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\"));
-
         }
 
         private void getBarchartToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            DailyDownloader dl = new DailyDownloader();
-            var list = dl.ComputeAllMinimumPains();
-            richTextBoxData.Multiline = true;
-            foreach (var item in list)
+            Cursor currentCursor = Cursor.Current;
+            currentCursor = Cursors.WaitCursor;
+
+            try
             {
-                richTextBoxData.Text += item + "\n";
+                ComputeMinimumPainStrikes();
             }
-            
+            catch (Exception exc)
+            {
+                ErrorFunction(exc.Message, exc);
+            }
+            finally
+            {
+                Cursor.Current = currentCursor;
+            }
+        }
+
+        private void ComputeMinimumPainStrikes()
+        {
+            DailyDownloader dl = new DailyDownloader();
+            richTextBoxData.Multiline = true;
+            var contractList = dl.GetContractList();
+            foreach (var contract in contractList)
+            {
+                var ret = dl.ComputeMinimumPain(contract);
+                richTextBoxData.Text += $"{ret}\n";
+                richTextBoxData.Refresh();
+            }
         }
     }
 }
