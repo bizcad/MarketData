@@ -30,6 +30,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.CME", "MarketDat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.Volatility", "MarketData.Volatility\MarketData.Volatility.csproj", "{39F36823-0201-46FD-9E2B-41AB25DB6C79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.Occ", "MarketData.Occ\MarketData.Occ.csproj", "{39424810-B912-4DFB-B2E2-D1D0B688EFE6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -68,6 +70,10 @@ Global
 		{39F36823-0201-46FD-9E2B-41AB25DB6C79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39F36823-0201-46FD-9E2B-41AB25DB6C79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39F36823-0201-46FD-9E2B-41AB25DB6C79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39424810-B912-4DFB-B2E2-D1D0B688EFE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39424810-B912-4DFB-B2E2-D1D0B688EFE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39424810-B912-4DFB-B2E2-D1D0B688EFE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39424810-B912-4DFB-B2E2-D1D0B688EFE6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

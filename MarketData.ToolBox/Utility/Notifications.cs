@@ -45,7 +45,27 @@ namespace MarketData.ToolBox.Utility
             client.Host = "smtp.1and1.com";
             client.Port = 587;
             SecureString secure = new SecureString();
-            string pwd = @"4w&A*X,7*";
+            var exec = AssemblyLocator.ExecutingDirectory();
+            FileInfo info = new FileInfo(exec);
+            string pwdfile = string.Empty;
+            string pwd;
+            try
+            {
+                var dir = info.Directory.Parent.Parent.Parent;
+                pwdfile = new FileInfo(dir.FullName + @"\MarketData.Test\TestData\EmailPassword.txt").FullName;
+            }
+            catch (DirectoryNotFoundException e)
+            {
+                throw new Exception($"Directory not found in Notifications");
+            }
+
+
+
+            using (StreamReader sr = new StreamReader(pwdfile))
+            {
+                pwd = sr.ReadLine();
+            }
+            
             foreach (char t in pwd)
             {
                 secure.AppendChar(t);

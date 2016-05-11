@@ -15,7 +15,7 @@
 using System.IO;
 using System.Reflection;
 
-namespace MarketData.GoogleFinance
+namespace MarketData.ToolBox.Utility
 {
     /// <summary>
     /// Locates the directory where the application is executing

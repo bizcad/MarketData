@@ -84,8 +84,10 @@
     <Compile Include="CommandLineTests.cs" />
     <Compile Include="ConfigTests.cs" />
     <Compile Include="DataLocatorTests.cs" />
+    <Compile Include="EmailTests.cs" />
     <Compile Include="MinuteDownloaderTests.cs" />
     <Compile Include="MoveFilesTests.cs" />
+    <Compile Include="OccTests.cs" />
     <Compile Include="SymbolDirectoryFactoryTests.cs" />
     <Compile Include="SymbolListBuilderTests.cs" />
     <Compile Include="FileCopierTests.cs" />
@@ -115,6 +117,10 @@
       <Project>{ccd6e605-2aed-4aa5-822e-7ee04398ce8a}</Project>
       <Name>MarketData.GoogleFinance</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MarketData.Occ\MarketData.Occ.csproj">
+      <Project>{39424810-b912-4dfb-b2e2-d1d0b688efe6}</Project>
+      <Name>MarketData.Occ</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MarketData.ToolBox\MarketData.ToolBox.csproj">
       <Project>{e3c5c7f7-7bfe-45e0-b414-f1ea1dfb4c02}</Project>
       <Name>MarketData.ToolBox</Name>
@@ -123,6 +129,9 @@
       <Project>{39f36823-0201-46fd-9e2b-41ab25db6c79}</Project>
       <Name>MarketData.Volatility</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="TestData\EmailPassword.txt" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">

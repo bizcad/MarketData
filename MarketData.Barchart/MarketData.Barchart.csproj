@@ -50,6 +50,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DailyDownloader.cs" />
+    <Compile Include="Models\BarchartRow.cs" />
     <Compile Include="Models\ContractInfo.cs" />
     <Compile Include="Models\PainRow.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

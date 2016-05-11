@@ -28,6 +28,7 @@ using System.Windows.Forms.VisualStyles;
 using MarketData.Barchart;
 using MarketData.GoogleFinance;
 using MarketData.ToolBox;
+using MarketData.ToolBox.Utility;
 
 namespace QuantConnect.GoogleFinanceUI
 {
@@ -1075,14 +1076,81 @@ namespace QuantConnect.GoogleFinanceUI
 
         private void ComputeMinimumPainStrikes()
         {
+            List<string> minimumPainList = new List<string>();
             DailyDownloader dl = new DailyDownloader();
             richTextBoxData.Multiline = true;
             var contractList = dl.GetContractList();
+            bool dateshown = false;
             foreach (var contract in contractList)
             {
                 var ret = dl.ComputeMinimumPain(contract);
+                if (!dateshown)
+                {
+                    richTextBoxData.Text += dl.Headers["Daily Options"] + $"\n";
+                    dateshown = true;
+                }
+                    
+                minimumPainList.Add(ret);
                 richTextBoxData.Text += $"{ret}\n";
                 richTextBoxData.Refresh();
+            }
+            richTextBoxData.Text += $"Saving Min Pain List\n";
+            richTextBoxData.Refresh();
+            dl.SaveMinimumPainList(minimumPainList);
+            richTextBoxData.Text += $"Done\n";
+            richTextBoxData.Refresh();
+        }
+
+        private async Task bothDailyAndMinuteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            await GetMinuteAndDailyData();
+        }
+
+        private async Task GetMinuteAndDailyData()
+        {
+            Cursor currentCursor = Cursor.Current;
+            currentCursor = Cursors.WaitCursor;
+
+           
+
+           
+            var destinationDirectory = Config.GetDefaultDownloadDirectory();
+            var defaultInputFile = Config.GetDefaultInputFile();
+            
+            string[] validatedArgs = new string[3];
+            validatedArgs[0] = defaultInputFile;
+            validatedArgs[1] = destinationDirectory;
+            richTextBoxData.Text = "Processing Files ...\n";
+            richTextBoxData.Refresh();
+            validatedArgs[2] = "minute";
+            Logger logger = new Logger("errors.txt");
+            try
+            {
+                FileInfo tickerListInfo = new FileInfo(validatedArgs[0]);
+                string directory = validatedArgs[1];
+                MinuteDownloader minuteDownloader = new MinuteDownloader(tickerListInfo, directory)
+                {
+                    FormatAsMilliseconds = true,
+                    SplitDays = true,
+                    ZipOutput = true
+                };
+                minuteDownloader.logger = new Logger("MinuteLog.txt");
+                await minuteDownloader.DownloadDataFromListAsync();
+
+                tickerListInfo = new FileInfo(validatedArgs[0]);
+                directory = validatedArgs[1];
+
+                AllDataDownloader downloader = new AllDataDownloader(tickerListInfo, directory) {ZipOutput = true};
+                downloader.logger = new Logger("DailyLogger.txt");
+                await downloader.DownloadDataFromListAsync();
+            }
+            catch (Exception ex)
+            {
+                logger.Log(ex.Message + ex.StackTrace);
+            }
+            finally
+            {
+                Cursor.Current = currentCursor;
             }
         }
     }

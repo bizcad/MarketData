@@ -1,4 +1,6 @@
-﻿namespace QuantConnect.GoogleFinanceUI {
+﻿using System;
+
+namespace QuantConnect.GoogleFinanceUI {
     partial class FormGoogleFinanceTest {
         /// <summary>
         /// Required designer variable.
@@ -56,11 +58,13 @@
             this.interiorFileNameToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.symbolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteMissedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.painStrikeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.getBarchartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.painStrikeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.getBarchartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.downloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bothDailyAndMinuteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel.SuspendLayout();
             this.groupBoxData.SuspendLayout();
             this.groupBoxURL.SuspendLayout();
@@ -382,7 +386,8 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.symbolsToolStripMenuItem,
-            this.painStrikeToolStripMenuItem});
+            this.painStrikeToolStripMenuItem,
+            this.downloadToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(513, 24);
@@ -423,18 +428,9 @@
             // deleteMissedToolStripMenuItem
             // 
             this.deleteMissedToolStripMenuItem.Name = "deleteMissedToolStripMenuItem";
-            this.deleteMissedToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
+            this.deleteMissedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
             this.deleteMissedToolStripMenuItem.Text = "Delete Missed";
             this.deleteMissedToolStripMenuItem.Click += new System.EventHandler(this.deleteMissedToolStripMenuItem_Click);
-            // 
-            // saveFileDialog
-            // 
-            this.saveFileDialog.FileName = "GogleFinanceTest.txt";
-            this.saveFileDialog.Filter = "All files (*.*)|*.*";
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog";
             // 
             // painStrikeToolStripMenuItem
             // 
@@ -447,9 +443,33 @@
             // getBarchartToolStripMenuItem
             // 
             this.getBarchartToolStripMenuItem.Name = "getBarchartToolStripMenuItem";
-            this.getBarchartToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.getBarchartToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
             this.getBarchartToolStripMenuItem.Text = "Get Barchart";
             this.getBarchartToolStripMenuItem.Click += new System.EventHandler(this.getBarchartToolStripMenuItem_Click);
+            // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.FileName = "GogleFinanceTest.txt";
+            this.saveFileDialog.Filter = "All files (*.*)|*.*";
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog";
+            // 
+            // downloadToolStripMenuItem
+            // 
+            this.downloadToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.bothDailyAndMinuteToolStripMenuItem});
+            this.downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
+            this.downloadToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
+            this.downloadToolStripMenuItem.Text = "Download";
+            // 
+            // bothDailyAndMinuteToolStripMenuItem
+            // 
+            this.bothDailyAndMinuteToolStripMenuItem.Name = "bothDailyAndMinuteToolStripMenuItem";
+            this.bothDailyAndMinuteToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.bothDailyAndMinuteToolStripMenuItem.Text = "Both Daily and Minute";
+            this.bothDailyAndMinuteToolStripMenuItem.Click += new System.EventHandler(async delegate(object o, EventArgs args) { await this.bothDailyAndMinuteToolStripMenuItem_Click(o, args); });
             // 
             // FormGoogleFinanceTest
             // 
@@ -520,6 +540,8 @@
         private System.Windows.Forms.ToolStripMenuItem interiorFileNameToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem painStrikeToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem getBarchartToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem downloadToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem bothDailyAndMinuteToolStripMenuItem;
     }
 }
 

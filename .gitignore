@@ -241,3 +241,4 @@ testrunner/
 
 # Meld original diff files
 *.orig
+/MarketData.Test/TestData/EmailPassword.txt

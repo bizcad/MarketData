@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using MarketData.GoogleFinance;
+using MarketData.ToolBox.Utility;
 
 namespace MarketData.GoogleFinanceDownloader
 {

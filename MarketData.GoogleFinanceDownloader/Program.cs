@@ -39,6 +39,9 @@ namespace MarketData.GoogleFinanceDownloader
         {
             try
             {
+                //foreach (String s2 in Environment.GetEnvironmentVariables().Keys)
+                //    Console.WriteLine(s2 + "=" + Environment.GetEnvironmentVariable(s2).ToString());
+
                 Arguments commandLine = new Arguments(args);
                 if (args[0] == "-r")
                     RenameInteriorFiles();

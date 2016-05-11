@@ -195,7 +195,7 @@ namespace MarketData.GoogleFinance
                 DirectoryInfo dailyDirectoryInfo = DailyDirectoryFactory.Create(_qcInfo);
 
                 _uriBuilder.SetTickerName(ticker);
-                var uri = _uriBuilder.GetGetPricesUrlToDownloadAllData(DateTime.Now);
+                 var uri = _uriBuilder.GetGetPricesUrlToDownloadAllData(DateTime.Now);
 
                 string fn = dailyDirectoryInfo.FullName + ticker.ToLower() + ".zip";
                 if (File.Exists(fn))

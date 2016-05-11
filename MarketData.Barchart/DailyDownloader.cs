@@ -37,7 +37,10 @@ namespace MarketData.Barchart
         private double contractMinpain = double.MaxValue;
         private string dataDir = string.Empty;
         private ContractInfo contractInfo;
-        
+        private StringBuilder sbHeading;
+        private List<string> painStrikeArray;
+
+
         #endregion
         #region "public properties"
 
@@ -56,15 +59,15 @@ namespace MarketData.Barchart
         /// <summary>
         /// A dictionary of strike prices and open interest for puts
         /// </summary>
-        public Dictionary<decimal, int> PutsDictionary = new Dictionary<decimal, int>();
+        public Dictionary<decimal, BarchartRow> PutsDictionary = new Dictionary<decimal, BarchartRow>();
         /// <summary>
         /// A dictionary of strike prices and open interest for calls
         /// </summary>
-        public Dictionary<decimal, int> CallsDictionary = new Dictionary<decimal, int>();
+        public Dictionary<decimal, BarchartRow> CallsDictionary = new Dictionary<decimal, BarchartRow>();
         /// <summary>
         /// The base folder for writing files.
         /// </summary>
-        public string StorageFolder = @"H:\PainStrike\";
+        public string StorageFolder = @"H:\PainStrike\BarCharts\";
         /// <summary>
         /// A CsvRowsList of possible contracts from the web site.
         /// </summary>
@@ -92,6 +95,7 @@ namespace MarketData.Barchart
             string url = Baseurl.Replace("{option}", pageMode);
             Debug.WriteLine(url);
             Document = web.Load(url);
+            
         }
 
         /// <summary>
@@ -113,6 +117,7 @@ namespace MarketData.Barchart
             {
                 ContractList.Add(optionNode.Attributes["value"].Value);
             }
+            painStrikeArray = new List<string>();
             return ContractList;
         }
 
@@ -205,8 +210,8 @@ namespace MarketData.Barchart
             {
                 var ppage = Document.DocumentNode;
                 GetHeaderDictionary(pageMode, ppage);   // Get the headers at the top of the list
-                //"12/16/16"
-                
+                                                        //"12/16/16"
+
                 var data = ppage.SelectSingleNode(rowSelector);
                 // Get the headers at the bottom of the list.
                 AddToHeadersDictionary(data);
@@ -243,7 +248,7 @@ namespace MarketData.Barchart
                     CallOpenInterestTotal = long.Parse(Headers["Call Open Interest Total"]),
                     PutOpenInterestTotal = long.Parse(Headers["Put Open Interest Total"]),
                     CallPutOpenInterestRatio = decimal.Parse(Headers["Call/Put Open Interest Ratio"])
-                    
+
                 };
             }
             catch (Exception ex)
@@ -313,7 +318,7 @@ namespace MarketData.Barchart
         /// </summary>
         /// <param name="pageMode">The contract name</param>
         /// <returns></returns>
-        public Dictionary<decimal, int> GetOpenInterestLists(string pageMode)
+        public Dictionary<decimal, BarchartRow> GetOpenInterestLists(string pageMode)
         {
             string filename = GetRowListFilename(pageMode);
             using (StreamReader sr = new StreamReader(filename))
@@ -328,7 +333,7 @@ namespace MarketData.Barchart
         /// <param name="sr"></param>
         /// <param name="pageMode">The contract name</param>
         /// <returns></returns>
-        public Dictionary<decimal, int> GetOpenInterestLists(StreamReader sr, string pageMode)
+        public Dictionary<decimal, BarchartRow> GetOpenInterestLists(StreamReader sr, string pageMode)
         {
             while (!sr.EndOfStream)
             {
@@ -346,7 +351,7 @@ namespace MarketData.Barchart
             }
             else
             {
-                ParsePutsAndCallsFromRowListLine(line);
+                AddRowToDictionary(line);
             }
         }
 
@@ -368,8 +373,8 @@ namespace MarketData.Barchart
             {
                 currentPrice = currentPrice,
                 strike = strike,
-                CallOpenInterest = CallsDictionary[strike],
-                PutOpenInterest = PutsDictionary[strike],
+                CallOpenInterest = CallsDictionary[strike].OpenInterest,
+                PutOpenInterest = PutsDictionary[strike].OpenInterest,
                 Call = ComputeCallValue(strike, currentPrice, true),
                 Put = ComputeCallValue(strike, currentPrice, false),
             }).ToList();
@@ -403,12 +408,12 @@ namespace MarketData.Barchart
         public decimal ComputeCallValue(decimal strike, decimal currentPrice, bool call)
         {
             decimal ret = 0;
-            int openInterest = 0;
+            decimal openInterest = 0;
             if (call)
             {
                 if (currentPrice > strike)
                 {
-                    openInterest = CallsDictionary[strike];
+                    openInterest = CallsDictionary[strike].OpenInterest;
                     if (openInterest > 0)
                         ret = (currentPrice - strike) * System.Convert.ToDecimal(openInterest);
 
@@ -418,7 +423,7 @@ namespace MarketData.Barchart
             {
                 if (currentPrice < strike)
                 {
-                    openInterest = PutsDictionary[strike];
+                    openInterest = PutsDictionary[strike].OpenInterest;
                     if (openInterest > 0)
                         ret = (strike - currentPrice) * System.Convert.ToDecimal(openInterest);
                 }
@@ -433,28 +438,53 @@ namespace MarketData.Barchart
         /// <returns></returns>
         public string ComputeMinimumPain(string pageMode)
         {
-            PutsDictionary = new Dictionary<decimal, int>();
-            CallsDictionary = new Dictionary<decimal, int>();
-
+            PutsDictionary = new Dictionary<decimal, BarchartRow>();
+            CallsDictionary = new Dictionary<decimal, BarchartRow>();
             PainValuesDictionary = new Dictionary<decimal, double>();
-            var rowList = GetRowList(pageMode);
-            GetOpenInterestListsFromRowList(rowList);
 
-            
+            var rowList = GetRowList(pageMode);
+            SeparatePutsAndCalls(rowList);
+
             contractMinpainstrike = 0;
             contractMinpain = double.MaxValue;
+
+            if (painStrikeArray.Count == 0)
+            {
+                sbHeading = new StringBuilder();
+                sbHeading.Append("\"Strike\",\"Call Open Interest\",\"Put Open Interest\"");
+                foreach (var key in PutsDictionary.Keys)
+                {
+                    sbHeading.Append(",");
+                    sbHeading.Append("\"");
+                    sbHeading.Append(key);
+                    sbHeading.Append("\"");
+                }
+                sbHeading.AppendLine(string.Empty);
+                painStrikeArray.Add(sbHeading.ToString());
+            }
+
+            StringBuilder painStrikeArrayBuilder = new StringBuilder();
+
             foreach (decimal key in PutsDictionary.Keys)
             {
-
                 double painvalue = (double)ComputePainForPrice(key, pageMode);
                 PainValuesDictionary.Add(key, painvalue);
+
+                painStrikeArrayBuilder.Append(",");
+                painStrikeArrayBuilder.Append("\"");
+                painStrikeArrayBuilder.Append(painvalue);
+                painStrikeArrayBuilder.Append("\"");
+
                 if (painvalue < contractMinpain)
                 {
                     contractMinpain = painvalue;
                     contractMinpainstrike = key;
                 }
             }
-            
+            painStrikeArrayBuilder.AppendLine(string.Empty);
+            painStrikeArray.Add(painStrikeArrayBuilder.ToString());
+
+
             SavePainValues(pageMode);
             SaveRowList(pageMode);
             contractInfo.MinimumPainAmount = Convert.ToDecimal(contractMinpain);
@@ -463,7 +493,7 @@ namespace MarketData.Barchart
 
 
             Debug.WriteLine("{0} {1} {2}", pageMode, contractMinpainstrike, contractMinpain);
-            string ret = $"{pageMode},{contractMinpainstrike},{contractMinpain}";
+            string ret = $"{pageMode},{contractInfo.OptionsExpirationDate.ToShortDateString()},{contractMinpainstrike},{contractMinpain}";
             return ret;
         }
 
@@ -478,7 +508,7 @@ namespace MarketData.Barchart
             var contractlist = GetContractList();
             foreach (string s in contractlist)
             {
-               
+
                 minimumPainList.Add(ComputeMinimumPain(s));
             }
 
@@ -486,6 +516,33 @@ namespace MarketData.Barchart
 
             return minimumPainList;
         }
+        public void SaveMinimumPainList(List<string> csvList)
+        {
+            using (var sr = new StreamWriter(GetDataFolder() + @"\MinPainStrikes.csv", false))
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.Append("\"");
+                sb.Append("Symbol");
+                sb.Append("\"");
+                sb.Append(",");
+                sb.Append("\"");
+                sb.Append("Strike");
+                sb.Append("\"");
+                sb.Append(",");
+                sb.Append("\"");
+                sb.Append("Pain Amount");
+                sb.Append("\"");
+                sr.WriteLine(sb.ToString());
+
+                foreach (string s in csvList)
+                {
+                    sr.WriteLine(s);
+                }
+                sr.Flush();
+                sr.Close();
+            }
+        }
+
         #endregion
         #region "private methods"
         /// <summary>
@@ -493,39 +550,47 @@ namespace MarketData.Barchart
         /// Other lines (header and footer) are ingnored.
         /// </summary>
         /// <param name="line">The line from the list</param>
-        private void ParsePutsAndCallsFromRowListLine(string line)
+        private void AddRowToDictionary(string line)
         {
             string[] arr = LineSplitter.SplitFilterCommasInQuotedStrings(line);
 
-            decimal strike;
-            int openInterest;
             if (arr[0].EndsWith("P"))
             {
-                strike = decimal.Parse(arr[0].Replace("P", string.Empty));
-                openInterest = int.Parse(arr[7]);
-                PutsDictionary.Add(strike, openInterest);
+                AddRowToDictionary(ref PutsDictionary, "P", arr);
             }
             else
             {
                 if (arr[0].EndsWith("C"))
                 {
-                    strike = decimal.Parse(arr[0].Replace("C", string.Empty));
-                    openInterest = int.Parse(arr[7]);
-                    CallsDictionary.Add(strike, openInterest);
-                }
-                else
-                {
-                    // just discard non put or call lines
-                    string message = line;
+                    AddRowToDictionary(ref CallsDictionary, "C", arr);
                 }
             }
+        }
+
+        private void AddRowToDictionary(ref Dictionary<decimal, BarchartRow> dic, string pOrC, string[] arr)
+        {
+            var strike = decimal.Parse(arr[0].Replace(pOrC, string.Empty));
+            BarchartRow row = new BarchartRow
+            {
+                Strike = strike,
+                Open = arr[1].Trim().Length > 0 ? decimal.Parse(arr[1]) : 0,
+                High = arr[2].Trim().Length > 0 ? decimal.Parse(arr[2]) : 0,
+                Low = arr[3].Trim().Length > 0 ? decimal.Parse(arr[3]) : 0,
+                Close = arr[4].Trim().Length > 0 ? decimal.Parse(arr[4]) : 0,
+                Change = arr[5].Trim().Length > 0 ? decimal.Parse(arr[5]) : 0,
+                Volume = arr[6].Trim().Length > 0 ? decimal.Parse(arr[6]) : 0,
+                OpenInterest = arr[7].Trim().Length > 0 ? decimal.Parse(arr[7]) : 0,
+                Delta = arr[8].Trim().Length > 0 ? decimal.Parse(arr[8]) : 0,
+                Premium = arr[9].Trim().Length > 0 ? decimal.Parse(arr[9]) : 0
+            };
+            dic.Add(strike, row);
         }
 
         /// <summary>
         /// Separates the list of web page table rows into a Calls Dictionary and a Puts Dictionary
         /// </summary>
-        /// <param name="rowList"></param>
-        private void GetOpenInterestListsFromRowList(List<string> rowList)
+        /// <param name="rowList">A list of comma delimeted strings from the BarChart page table</param>
+        private void SeparatePutsAndCalls(List<string> rowList)
         {
             foreach (string line in rowList)
             {
@@ -535,7 +600,7 @@ namespace MarketData.Barchart
                 }
                 else
                 {
-                    ParsePutsAndCallsFromRowListLine(line);
+                    AddRowToDictionary(line);
                 }
             }
         }
@@ -726,6 +791,8 @@ namespace MarketData.Barchart
         {
             var serializedPainValues = CsvSerializer.Serialize(",", PainValuesDictionary, true);
 
+
+
             string filename = GetPainValuesFilename(pageMode);
             using (var sw = new StreamWriter(filename, false))
             {
@@ -735,32 +802,6 @@ namespace MarketData.Barchart
                 }
                 sw.Flush();
                 sw.Close();
-            }
-        }
-        private void SaveMinimumPainList(List<string> csvList)
-        {
-            using (var sr = new StreamWriter(GetDataFolder() + @"\MinPainStrikes.csv", false))
-            {
-                StringBuilder sb = new StringBuilder();
-                sb.Append("\"");
-                sb.Append("Symbol");
-                sb.Append("\"");
-                sb.Append(",");
-                sb.Append("\"");
-                sb.Append("Strike");
-                sb.Append("\"");
-                sb.Append(",");
-                sb.Append("\"");
-                sb.Append("Pain Amount");
-                sb.Append("\"");
-                sr.WriteLine(sb.ToString());
-
-                foreach (string s in csvList)
-                {
-                    sr.WriteLine(s);
-                }
-                sr.Flush();
-                sr.Close();
             }
         }
         #endregion

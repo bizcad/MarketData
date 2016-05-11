@@ -1,5 +1,6 @@
 ﻿using NUnit.Framework;
 using MarketData.GoogleFinance;
+using MarketData.ToolBox.Utility;
 
 namespace MarketData.Test
 {

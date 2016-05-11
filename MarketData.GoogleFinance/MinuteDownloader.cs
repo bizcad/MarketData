@@ -194,7 +194,7 @@ namespace MarketData.GoogleFinance
                 {
                     var lastfile = files.LastOrDefault();
                     numberOfDays = NumberOfDaysSinceLastDownload(lastfile);
-                    //numberOfDays = 3;
+                    //numberOfDays = 7;
                 }
 
 
