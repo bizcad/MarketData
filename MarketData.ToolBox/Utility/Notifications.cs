@@ -24,7 +24,7 @@ namespace MarketData.ToolBox.Utility
         public bool CustomEmail(string address, string subject, string message, string data = "")
         {
             MailMessage msg = new MailMessage();
-            msg.From = new MailAddress("admin.nick@bizcad.com");
+            
             msg.To.Add(new MailAddress(address));
             msg.Subject = subject;
             msg.Body = message;
@@ -54,7 +54,10 @@ namespace MarketData.ToolBox.Utility
             try
             {
                 var dir = info.Directory.Parent.Parent.Parent;
-                pwdfile = new FileInfo(dir.FullName + @"\MarketData.Test\TestData\EmailPassword.txt").FullName;
+                if (dir != null)
+                    pwdfile = new FileInfo(dir.FullName + @"\MarketData.Test\TestData\EmailPassword.txt").FullName;
+                else
+                    throw new DirectoryNotFoundException("Could not find " + dir.FullName);
             }
             catch (DirectoryNotFoundException e)
             {
@@ -65,12 +68,16 @@ namespace MarketData.ToolBox.Utility
                 pwd = sr.ReadLine();
                 networkMailbox = sr.ReadLine();
             }
-            
-            foreach (char t in pwd)
+            if (networkMailbox != null)
             {
-                secure.AppendChar(t);
+                msg.From = new MailAddress(networkMailbox);
+                if (pwd != null)
+                    foreach (char t in pwd)
+                    {
+                        secure.AppendChar(t);
+                    }
+                client.Credentials = new NetworkCredential(networkMailbox, secure);
             }
-            client.Credentials = new NetworkCredential(networkMailbox, secure);
             //client.EnableSsl = true;
             try
             {
