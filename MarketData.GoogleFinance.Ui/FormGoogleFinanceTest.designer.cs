@@ -60,11 +60,13 @@ namespace QuantConnect.GoogleFinanceUI {
             this.deleteMissedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.painStrikeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.getBarchartToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.getOccToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.downloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.bothDailyAndMinuteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.downloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.bothDailyAndMinuteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel.SuspendLayout();
             this.groupBoxData.SuspendLayout();
             this.groupBoxURL.SuspendLayout();
@@ -428,14 +430,15 @@ namespace QuantConnect.GoogleFinanceUI {
             // deleteMissedToolStripMenuItem
             // 
             this.deleteMissedToolStripMenuItem.Name = "deleteMissedToolStripMenuItem";
-            this.deleteMissedToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.deleteMissedToolStripMenuItem.Size = new System.Drawing.Size(147, 22);
             this.deleteMissedToolStripMenuItem.Text = "Delete Missed";
             this.deleteMissedToolStripMenuItem.Click += new System.EventHandler(this.deleteMissedToolStripMenuItem_Click);
             // 
             // painStrikeToolStripMenuItem
             // 
             this.painStrikeToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.getBarchartToolStripMenuItem});
+            this.getBarchartToolStripMenuItem,
+            this.getOccToolStripMenuItem});
             this.painStrikeToolStripMenuItem.Name = "painStrikeToolStripMenuItem";
             this.painStrikeToolStripMenuItem.Size = new System.Drawing.Size(74, 20);
             this.painStrikeToolStripMenuItem.Text = "Pain Strike";
@@ -447,19 +450,18 @@ namespace QuantConnect.GoogleFinanceUI {
             this.getBarchartToolStripMenuItem.Text = "Get Barchart";
             this.getBarchartToolStripMenuItem.Click += new System.EventHandler(this.getBarchartToolStripMenuItem_Click);
             // 
-            // saveFileDialog
+            // getOccToolStripMenuItem
             // 
-            this.saveFileDialog.FileName = "GogleFinanceTest.txt";
-            this.saveFileDialog.Filter = "All files (*.*)|*.*";
-            // 
-            // openFileDialog1
-            // 
-            this.openFileDialog1.FileName = "openFileDialog";
+            this.getOccToolStripMenuItem.Name = "getOccToolStripMenuItem";
+            this.getOccToolStripMenuItem.Size = new System.Drawing.Size(139, 22);
+            this.getOccToolStripMenuItem.Text = "Get Occ";
+            this.getOccToolStripMenuItem.Click += new System.EventHandler(this.getOccToolStripMenuItem_Click);
             // 
             // downloadToolStripMenuItem
             // 
             this.downloadToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.bothDailyAndMinuteToolStripMenuItem});
+            this.bothDailyAndMinuteToolStripMenuItem,
+            this.copyFilesToolStripMenuItem});
             this.downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
             this.downloadToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.downloadToolStripMenuItem.Text = "Download";
@@ -469,7 +471,23 @@ namespace QuantConnect.GoogleFinanceUI {
             this.bothDailyAndMinuteToolStripMenuItem.Name = "bothDailyAndMinuteToolStripMenuItem";
             this.bothDailyAndMinuteToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
             this.bothDailyAndMinuteToolStripMenuItem.Text = "Both Daily and Minute";
-            this.bothDailyAndMinuteToolStripMenuItem.Click += new System.EventHandler(async delegate(object o, EventArgs args) { await this.bothDailyAndMinuteToolStripMenuItem_Click(o, args); });
+            this.bothDailyAndMinuteToolStripMenuItem.Click += new System.EventHandler(this.bothDailyAndMinuteToolStripMenuItem_Click);
+            // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.FileName = "GogleFinanceTest.txt";
+            this.saveFileDialog.Filter = "All files (*.*)|*.*";
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog";
+            // 
+            // copyFilesToolStripMenuItem
+            // 
+            this.copyFilesToolStripMenuItem.Name = "copyFilesToolStripMenuItem";
+            this.copyFilesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.copyFilesToolStripMenuItem.Text = "Copy Files";
+            this.copyFilesToolStripMenuItem.Click += new System.EventHandler(this.copyFilesToolStripMenuItem_Click);
             // 
             // FormGoogleFinanceTest
             // 
@@ -542,6 +560,8 @@ namespace QuantConnect.GoogleFinanceUI {
         private System.Windows.Forms.ToolStripMenuItem getBarchartToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem downloadToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem bothDailyAndMinuteToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem getOccToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem copyFilesToolStripMenuItem;
     }
 }
 

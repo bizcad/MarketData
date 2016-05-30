@@ -138,11 +138,15 @@ namespace MarketData.Barchart
         private Dictionary<string, string> GetHeaderDictionary(string pageMode, HtmlNode ppage)
         {
             var tables = ppage.SelectNodes(headerselector);
+            if (tables == null)
+                return null;
             return GetHeaderDictionary(pageMode, tables);
         }
 
         private Dictionary<string, string> AddToHeadersDictionary(HtmlNode data)
         {
+            if (data == null)
+                return null;
             var rows = data.ChildNodes.Where(n => !n.Name.Contains("#text") && n.ChildNodes.Count < 3);
             foreach (var row in rows)
             {
@@ -170,6 +174,7 @@ namespace MarketData.Barchart
         /// <returns>A dictionary of header names and values</returns>
         public Dictionary<string, string> GetHeaderDictionary(string pageMode, HtmlNodeCollection tables)
         {
+            
             Headers = new Dictionary<string, string>();
 
             var key = string.Empty;
@@ -208,17 +213,20 @@ namespace MarketData.Barchart
 
             if (Document != null)
             {
+                // Make sure the CsvRowList is new and blank
+                CsvRowsList = new List<string>();
+
                 var ppage = Document.DocumentNode;
                 GetHeaderDictionary(pageMode, ppage);   // Get the headers at the top of the list
                                                         //"12/16/16"
 
                 var data = ppage.SelectSingleNode(rowSelector);
+                if (data == null)
+                    return CsvRowsList;
                 // Get the headers at the bottom of the list.
                 AddToHeadersDictionary(data);
 
-                // Make sure the CsvRowList is new and blank
-                CsvRowsList = new List<string>();
-
+                
                 // Add the rows to the list
                 foreach (var row in data.ChildNodes.Where(n => !n.Name.Contains("#text")))
                 {
@@ -443,6 +451,8 @@ namespace MarketData.Barchart
             PainValuesDictionary = new Dictionary<decimal, double>();
 
             var rowList = GetRowList(pageMode);
+            if (rowList.Count == 0)
+                return string.Empty;
             SeparatePutsAndCalls(rowList);
 
             contractMinpainstrike = 0;

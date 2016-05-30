@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -49,6 +50,7 @@ namespace MarketData.ToolBox.Utility
             FileInfo info = new FileInfo(exec);
             string pwdfile = string.Empty;
             string pwd;
+            string networkMailbox;
             try
             {
                 var dir = info.Directory.Parent.Parent.Parent;
@@ -56,21 +58,19 @@ namespace MarketData.ToolBox.Utility
             }
             catch (DirectoryNotFoundException e)
             {
-                throw new Exception($"Directory not found in Notifications");
+                throw new DirectoryNotFoundException("Directory not found in Notifications " + e.Message);
             }
-
-
-
             using (StreamReader sr = new StreamReader(pwdfile))
             {
                 pwd = sr.ReadLine();
+                networkMailbox = sr.ReadLine();
             }
             
             foreach (char t in pwd)
             {
                 secure.AppendChar(t);
             }
-            client.Credentials = new NetworkCredential("admin.nick@bizcad.com", secure);
+            client.Credentials = new NetworkCredential(networkMailbox, secure);
             //client.EnableSsl = true;
             try
             {
@@ -81,6 +81,7 @@ namespace MarketData.ToolBox.Utility
                 Console.WriteLine(ex.Message);
                 return false;
             }
+            Debug.WriteLine("Email Sent");
             return true;
         }
 

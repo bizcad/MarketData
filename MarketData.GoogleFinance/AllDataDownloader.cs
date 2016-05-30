@@ -218,6 +218,7 @@ namespace MarketData.GoogleFinance
                 Ticker = ticker;
                 WebClient wClient = new WebClient();
                 NameValueCollection myQueryStringCollection = new NameValueCollection();
+                
                 myQueryStringCollection.Add("symbol", ticker);
                 myQueryStringCollection.Add("OutputDirectory", dailyDirectoryInfo.FullName);
                 wClient.QueryString = myQueryStringCollection;
@@ -235,6 +236,7 @@ namespace MarketData.GoogleFinance
         /// <param name="e">The data returned by the downloader.</param>
         private async void wClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
         {
+            
             WebClient client = (WebClient)sender;
             var ticker = client.QueryString["symbol"];
 

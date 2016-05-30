@@ -26,5 +26,14 @@ namespace MarketData.Test
             Assert.IsNotNull(ret);
             Assert.IsTrue(ret.Count > 0);
         }
+        [TestMethod]
+        public void GetsContractList()
+        {
+            OccDownloader dl = new OccDownloader();
+            
+            var ret = dl.GetContractList();
+            Assert.IsNotNull(ret);
+            Assert.IsTrue(ret.Count > 0);
+        }
     }
 }

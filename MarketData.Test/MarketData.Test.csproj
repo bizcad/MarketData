@@ -88,6 +88,7 @@
     <Compile Include="MinuteDownloaderTests.cs" />
     <Compile Include="MoveFilesTests.cs" />
     <Compile Include="OccTests.cs" />
+    <Compile Include="OicDownloaderTests.cs" />
     <Compile Include="SymbolDirectoryFactoryTests.cs" />
     <Compile Include="SymbolListBuilderTests.cs" />
     <Compile Include="FileCopierTests.cs" />
@@ -120,6 +121,10 @@
     <ProjectReference Include="..\MarketData.Occ\MarketData.Occ.csproj">
       <Project>{39424810-b912-4dfb-b2e2-d1d0b688efe6}</Project>
       <Name>MarketData.Occ</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MarketData.Oic\MarketData.Oic.csproj">
+      <Project>{c1cd44a4-795c-4cb5-b497-60a5ec81b43d}</Project>
+      <Name>MarketData.Oic</Name>
     </ProjectReference>
     <ProjectReference Include="..\MarketData.ToolBox\MarketData.ToolBox.csproj">
       <Project>{e3c5c7f7-7bfe-45e0-b414-f1ea1dfb4c02}</Project>

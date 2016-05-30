@@ -163,8 +163,8 @@ namespace MarketData.GoogleFinance
                     exchange = kvpair.Value;
                 }
                 // used in debugging
-                if (ticker == "ABEV")
-                    Debug.WriteLine("here");
+                //if (ticker == "ABEV")
+                //    Debug.WriteLine("here");
 
                 DirectoryInfo outputFolder;
                 if (OutputDirectory != null || OutputDirectory.Length > 0)

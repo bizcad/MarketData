@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
@@ -13,6 +14,8 @@ namespace MarketData.Occ
 {
     public class OccDownloader
     {
+        private const string ListedProductsDownloadUrl =
+            @"http://www.theocc.com/webapps/daily-delo-download?reportDate={ReportDate}&format=txt";
         /// <summary>
         /// The HtmlDocument for HtmlAgilityPack
         /// </summary>
@@ -22,7 +25,7 @@ namespace MarketData.Occ
         /// </summary>
         public string StorageFolder = @"H:\PainStrike\Occ\";
 
-        private string rowSelector = @"//table[@class='tablesorter']";
+        //private string rowSelector = @"//table[@class='tablesorter']";
         private string tableHeadSelector = @"//table[@class='tablesorter']//thead//tr//th";
         private string tableRowSelector = @"//table[@class='tablesorter']//tbody//tr";
 
@@ -41,11 +44,73 @@ namespace MarketData.Occ
 
         }
 
+        
+
+        public List<ListedOption> GetContractList()
+        {
+            string contents = string.Empty;
+            var contractList = new List<ListedOption>();
+            string uri = ListedProductsDownloadUrl.Replace("{ReportDate}", "20160511");
+            uri = @"http://www.optionseducation.org/quotes.html?quote=SPX";
+            WebClient wClient = new WebClient();
+            wClient.DownloadDataCompleted += wClient_DownloadDataCompleted;
+            Stream stream = wClient.OpenRead(uri);
+            StreamReader sr = new StreamReader(stream);
+            {
+                while (!sr.EndOfStream)
+                {
+                    var readLine = sr.ReadLine();
+                    if (!string.IsNullOrEmpty(readLine))
+                    {
+                        var line = readLine;
+                        //ListedOption o = new ListedOption
+                        //{
+                        //    OptionSymbol = line[0],
+                        //    UnderlyingSymbol = line[1],
+                        //    SymbolName = line[2],
+                        //    OnnProductType = line[3],
+                        //    PostionLimit = line[4],
+                        //    Exchanges = line[5]
+                        //};
+                        //contractList.Add(o);
+                    }
+                }
+                sr.Close();
+            }
+
+            return contractList;
+
+        }
+
+        private void wClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<string> GetTableFromHtml()
         {
             tableList = new List<string>();
             GetDocument();
             var ppage = Document.DocumentNode;
+            GetTableHeading(ppage);
+            tableList.Add(tableHeading);
+            GetTableCsvList(ppage);
+            SaveRowList("Occ", tableList);
+            
+            return tableList;
+        }
+
+        private void GetTableCsvList(HtmlNode ppage)
+        {
+            HtmlNodeCollection tableNodes = ppage.SelectNodes(tableRowSelector);
+            foreach (var node in tableNodes)
+            {
+                tableList.Add(CsvFromTableRowNode(node));
+            }
+        }
+
+        private void GetTableHeading(HtmlNode ppage)
+        {
             HtmlNodeCollection tableHeadNodes = ppage.SelectNodes(tableHeadSelector);
             StringBuilder sb = new StringBuilder();
             foreach (var node in tableHeadNodes)
@@ -57,18 +122,7 @@ namespace MarketData.Occ
             }
             tableHeading = sb.ToString();
             tableHeading = tableHeading.Substring(0, tableHeading.Length - 1);
-            tableList.Add(tableHeading);
-
-            HtmlNodeCollection tableNodes = ppage.SelectNodes(tableRowSelector);
-
-
-            foreach (var node in tableNodes)
-            {
-                tableList.Add(CsvFromTableRowNode(node));
-            }
-            SaveRowList("Occ", tableList);
             
-            return tableList;
         }
 
         public List<OccRecord> CsvToObjectList(List<string> tableList)

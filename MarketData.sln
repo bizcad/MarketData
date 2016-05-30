@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.Volatility", "Ma
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.Occ", "MarketData.Occ\MarketData.Occ.csproj", "{39424810-B912-4DFB-B2E2-D1D0B688EFE6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MarketData.Oic", "MarketData.Oic\MarketData.Oic.csproj", "{C1CD44A4-795C-4CB5-B497-60A5EC81B43D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -74,6 +76,10 @@ Global
 		{39424810-B912-4DFB-B2E2-D1D0B688EFE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39424810-B912-4DFB-B2E2-D1D0B688EFE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39424810-B912-4DFB-B2E2-D1D0B688EFE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C1CD44A4-795C-4CB5-B497-60A5EC81B43D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C1CD44A4-795C-4CB5-B497-60A5EC81B43D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C1CD44A4-795C-4CB5-B497-60A5EC81B43D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C1CD44A4-795C-4CB5-B497-60A5EC81B43D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

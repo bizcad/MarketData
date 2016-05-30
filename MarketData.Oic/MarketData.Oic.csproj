@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{39424810-B912-4DFB-B2E2-D1D0B688EFE6}</ProjectGuid>
+    <ProjectGuid>{C1CD44A4-795C-4CB5-B497-60A5EC81B43D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MarketData.Occ</RootNamespace>
-    <AssemblyName>MarketData.Occ</AssemblyName>
+    <RootNamespace>MarketData.Oic</RootNamespace>
+    <AssemblyName>MarketData.Oic</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -45,11 +45,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\ListedOption.cs" />
-    <Compile Include="Models\OccContract.cs" />
-    <Compile Include="Models\OccRecord.cs" />
-    <Compile Include="OccDownloader.cs" />
+    <Compile Include="OicDownloader.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MarketData.ToolBox\MarketData.ToolBox.csproj">
+      <Project>{e3c5c7f7-7bfe-45e0-b414-f1ea1dfb4c02}</Project>
+      <Name>MarketData.ToolBox</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -84,9 +84,17 @@
       <Project>{F4113271-0543-409B-8B87-179EA31957CE}</Project>
       <Name>MarketData.Barchart</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MarketData.GoogleFinanceDownloader\MarketData.GoogleFinanceDownloader.csproj">
+      <Project>{799705E7-B166-4E0D-AAEA-BD274616C8C2}</Project>
+      <Name>MarketData.GoogleFinanceDownloader</Name>
+    </ProjectReference>
     <ProjectReference Include="..\MarketData.GoogleFinance\MarketData.GoogleFinance.csproj">
       <Project>{ccd6e605-2aed-4aa5-822e-7ee04398ce8a}</Project>
       <Name>MarketData.GoogleFinance</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MarketData.Occ\MarketData.Occ.csproj">
+      <Project>{39424810-b912-4dfb-b2e2-d1d0b688efe6}</Project>
+      <Name>MarketData.Occ</Name>
     </ProjectReference>
     <ProjectReference Include="..\MarketData.ToolBox\MarketData.ToolBox.csproj">
       <Project>{e3c5c7f7-7bfe-45e0-b414-f1ea1dfb4c02}</Project>
