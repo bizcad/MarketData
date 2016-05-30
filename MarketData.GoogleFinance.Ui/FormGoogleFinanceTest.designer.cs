@@ -63,10 +63,12 @@ namespace QuantConnect.GoogleFinanceUI {
             this.getOccToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.downloadToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.bothDailyAndMinuteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.copyFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.folderBrowserDialog1 = new System.Windows.Forms.FolderBrowserDialog();
-            this.copyFilesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.dailyToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.minuteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel.SuspendLayout();
             this.groupBoxData.SuspendLayout();
             this.groupBoxURL.SuspendLayout();
@@ -461,7 +463,9 @@ namespace QuantConnect.GoogleFinanceUI {
             // 
             this.downloadToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.bothDailyAndMinuteToolStripMenuItem,
-            this.copyFilesToolStripMenuItem});
+            this.copyFilesToolStripMenuItem,
+            this.dailyToolStripMenuItem,
+            this.minuteToolStripMenuItem});
             this.downloadToolStripMenuItem.Name = "downloadToolStripMenuItem";
             this.downloadToolStripMenuItem.Size = new System.Drawing.Size(73, 20);
             this.downloadToolStripMenuItem.Text = "Download";
@@ -473,6 +477,13 @@ namespace QuantConnect.GoogleFinanceUI {
             this.bothDailyAndMinuteToolStripMenuItem.Text = "Both Daily and Minute";
             this.bothDailyAndMinuteToolStripMenuItem.Click += new System.EventHandler(this.bothDailyAndMinuteToolStripMenuItem_Click);
             // 
+            // copyFilesToolStripMenuItem
+            // 
+            this.copyFilesToolStripMenuItem.Name = "copyFilesToolStripMenuItem";
+            this.copyFilesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.copyFilesToolStripMenuItem.Text = "Copy Files";
+            this.copyFilesToolStripMenuItem.Click += new System.EventHandler(this.copyFilesToolStripMenuItem_Click);
+            // 
             // saveFileDialog
             // 
             this.saveFileDialog.FileName = "GogleFinanceTest.txt";
@@ -482,12 +493,18 @@ namespace QuantConnect.GoogleFinanceUI {
             // 
             this.openFileDialog1.FileName = "openFileDialog";
             // 
-            // copyFilesToolStripMenuItem
+            // dailyToolStripMenuItem
             // 
-            this.copyFilesToolStripMenuItem.Name = "copyFilesToolStripMenuItem";
-            this.copyFilesToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
-            this.copyFilesToolStripMenuItem.Text = "Copy Files";
-            this.copyFilesToolStripMenuItem.Click += new System.EventHandler(this.copyFilesToolStripMenuItem_Click);
+            this.dailyToolStripMenuItem.Name = "dailyToolStripMenuItem";
+            this.dailyToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.dailyToolStripMenuItem.Text = "Daily";
+            // 
+            // minuteToolStripMenuItem
+            // 
+            this.minuteToolStripMenuItem.Name = "minuteToolStripMenuItem";
+            this.minuteToolStripMenuItem.Size = new System.Drawing.Size(192, 22);
+            this.minuteToolStripMenuItem.Text = "Minute";
+            this.minuteToolStripMenuItem.Click += new System.EventHandler(this.minuteToolStripMenuItem_Click);
             // 
             // FormGoogleFinanceTest
             // 
@@ -562,6 +579,8 @@ namespace QuantConnect.GoogleFinanceUI {
         private System.Windows.Forms.ToolStripMenuItem bothDailyAndMinuteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem getOccToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem copyFilesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem dailyToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem minuteToolStripMenuItem;
     }
 }
 

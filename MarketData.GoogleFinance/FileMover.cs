@@ -13,61 +13,78 @@ namespace MarketData.GoogleFinance
 {
     public static class FileMover
     {
-        public static void MoveFiles(DirectoryInfo sourceRoot)
+        /// <summary>
+        /// Copies all the files in a folder to a new folder overwritting the old
+        /// </summary>
+        /// <param name="sourceRoot"></param>
+        /// <returns>bool true if sucessful</returns>
+        public static bool CopyDailyFiles(DirectoryInfo sourceRoot)
         {
-            DirectoryInfo destRoot = new DirectoryInfo(@"H:\GoogleFinanceData\equity\usa\minute\");
-            //DirectoryInfo root;
+            DirectoryInfo destRoot = new DirectoryInfo(sourceRoot.FullName.Replace("L:", "H:"));
 
-            var subdirs1 = sourceRoot.GetDirectories();
-
-            foreach (DirectoryInfo info1 in subdirs1)
+            if (!destRoot.Exists)
             {
+                throw new DirectoryNotFoundException("Destination root not found");
+            }
 
-                //System.Threading.Thread.Sleep(100);
-                var subdirs2 = info1.GetDirectories();
-                foreach (DirectoryInfo info3 in subdirs2)
+
+            var files = sourceRoot.GetFiles();
+            foreach (var file3 in files)
+            {
+                try
                 {
+                    string oldname = file3.Name;
+                    FileInfo oldpath = new FileInfo(sourceRoot.FullName + file3.Name);
+                    FileInfo newpath = new FileInfo(destRoot.FullName + file3.Name);
+                    oldpath.CopyTo(newpath.FullName, true);
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+            }
+            System.Threading.Thread.Sleep(250);
 
+
+            return true;
+        }
+        /// <summary>
+        /// Copies all the files in the minute folder.  No overwrite if destfile exists.
+        /// </summary>
+        /// <param name="sourceRoot"></param>
+        /// <returns>bool true if sucessful</returns>
+        public static bool CopyMinuteFiles(DirectoryInfo sourceRoot)
+        {
+            DirectoryInfo destRoot = new DirectoryInfo(sourceRoot.FullName.Replace("L:", "H:"));
+
+            if (!destRoot.Exists)
+            {
+                throw new DirectoryNotFoundException("Destination root not found");
+            }
+
+            var dirs = sourceRoot.GetDirectories();
+            foreach (var dir in dirs)
+            {
+                var files = dir.GetFiles();
+                foreach (var file3 in files)
+                {
                     try
                     {
-                        if (!Directory.Exists(destRoot.FullName + info3.Name))
-                        {
-                            try
-                            {
-                                destRoot.CreateSubdirectory(info3.Name);
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine($"{e.Message} \n {e.StackTrace}");
-                            }
-                        }
-
-                        Debug.WriteLine(info3.Name);
-
-                        var files = info3.GetFiles();
-                        foreach (var file3 in files)
-                        {
-                            try
-                            {
-                                string oldname = file3.FullName;
-                                string newname = destRoot.FullName + info3.Name + @"\" + file3.Name;
-                                File.Move(oldname, newname);
-
-                            }
-                            catch (Exception ex)
-                            {
-                                throw new Exception(ex.Message + file3.FullName);
-                            }
-                        }
-                        System.Threading.Thread.Sleep(250);
-                        //                Directory.Delete(info3.FullName, true);
+                        FileInfo oldpath = new FileInfo(dir.FullName + "\\" + file3.Name);
+                        FileInfo newpath = new FileInfo(oldpath.FullName.Replace("L:", "H:"));
+                        if (!newpath.Exists)
+                            oldpath.MoveTo(newpath.FullName);
                     }
                     catch (Exception ex)
                     {
-                        throw new Exception(ex.Message + info3.FullName);
+                        return false;
                     }
                 }
             }
+            System.Threading.Thread.Sleep(250);
+
+
+            return true;
         }
 
         public static void RenameInteriorFiles(DirectoryInfo sourceRoot)
@@ -165,7 +182,7 @@ namespace MarketData.GoogleFinance
             if (symbolFileInfo.Exists)
                 symbolFileInfo.Delete();
             if (linelist.Count > 0)
-                using (StreamWriter wr = new StreamWriter(symbolFileInfo.FullName.Replace("symbols","badsymbols"), false))
+                using (StreamWriter wr = new StreamWriter(symbolFileInfo.FullName.Replace("symbols", "badsymbols"), false))
                 {
                     foreach (string line in linelist)
                     {

@@ -65,7 +65,7 @@ namespace MarketData.Test
         [TestMethod]
         public void MovesFiles()
         {
-            FileMover.MoveFiles(new DirectoryInfo(@"H:\GoogleFinanceData\NYSE\"));
+            FileMover.CopyDailyFiles(new DirectoryInfo(@"H:\GoogleFinanceData\NYSE\"));
             Assert.IsTrue(File.Exists(@"H:\GoogleFinanceData\equity\usa\minute\ATT\20150519_trade.zip"));
         }
         [TestMethod]
